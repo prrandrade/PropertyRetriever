@@ -398,7 +398,9 @@
             {
                 try
                 {
-                    return commandLineArg.Split(separator, StringSplitOptions.RemoveEmptyEntries).Select(x => (T)Convert.ChangeType(x, typeof(T)));
+                    return commandLineArg
+                        .Split(separator, StringSplitOptions.RemoveEmptyEntries)
+                        .Select(x => (T) Convert.ChangeType(x, typeof(T))).ToList();
                 }
                 catch
                 {
@@ -414,7 +416,9 @@
                 {
                     try
                     {
-                        return environmentValue.Split(separator, StringSplitOptions.RemoveEmptyEntries).Select(x => (T)Convert.ChangeType(x, typeof(T)));
+                        return environmentValue
+                            .Split(separator, StringSplitOptions.RemoveEmptyEntries)
+                            .Select(x => (T)Convert.ChangeType(x, typeof(T))).ToList();
                     }
                     catch
                     {
