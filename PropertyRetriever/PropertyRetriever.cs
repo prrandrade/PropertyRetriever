@@ -151,7 +151,7 @@
         {
             try
             {
-                return RetrieveProperty<T>(propertyName, null, possibleValues, true);
+                return RetrieveProperty(propertyName, null, possibleValues, true);
             }
             catch
             {
@@ -368,7 +368,7 @@
             // retrieving environment variable
             if (alsoOnEnvironment)
             {
-                var environmentValue = RetrieveEnvironmentValue(propertyName);
+                var environmentValue = RetrieveEnvironmentValue(propertyName, alternativeShortCommandName);
                 if (environmentValue != null)
                 {
                     try
@@ -409,7 +409,7 @@
             // retrieving environment variable
             if (alsoOnEnvironment)
             {
-                var environmentValue = RetrieveEnvironmentValue(propertyName);
+                var environmentValue = RetrieveEnvironmentValue(propertyName, alternativeShortCommandName);
                 if (environmentValue != null)
                 {
                     try
@@ -459,9 +459,12 @@
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private string RetrieveEnvironmentValue(string propertyName)
+        private string RetrieveEnvironmentValue(string propertyName, string alternativeShortName)
         {
-            return _localEnvironment.GetEnvironmentVariable(propertyName);
+            var valueGivenProperytyName = _localEnvironment.GetEnvironmentVariable(propertyName);
+            var valueGivenAlternativeShortName = _localEnvironment.GetEnvironmentVariable(alternativeShortName);
+
+            return valueGivenProperytyName ?? valueGivenAlternativeShortName;
         }
 
         #endregion
