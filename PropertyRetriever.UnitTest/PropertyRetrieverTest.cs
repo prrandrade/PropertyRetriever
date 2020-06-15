@@ -143,7 +143,7 @@
         [Theory]
         [InlineData("value", new[] { "value1", "value2" })]
         [InlineData(1, new object[] { 2, 3, 5 })]
-        public void RetrieveSimpleProperty_WithListOfValues_WithDefaultValue_FromCommand(object expectedValue, object[] possibleValues)
+        public void RetrieveSimpleProperty_FromCommandLine_WithListOfValues_WithDefaultValue(object expectedValue, object[] possibleValues)
         {
             // arrange
             _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(new[] { "example.exe", "--propertyName", $"{expectedValue}" });
@@ -158,7 +158,7 @@
         [Theory]
         [InlineData("value", new[] { "value1", "value2" })]
         [InlineData(1, new object[] { 2, 3, 5 })]
-        public void RetrieveSimpleProperty_WithListOfValues_WithDefaultValue_FromEnvironment(object expectedValue, object[] possibleValues)
+        public void RetrieveSimpleProperty_FromEnvironment_WithListOfValues_WithDefaultValue(object expectedValue, object[] possibleValues)
         {
             // arrange
             _localEnvironmentMock.Setup(x => x.GetEnvironmentVariable("propertyName")).Returns($"{expectedValue}");
@@ -378,7 +378,7 @@
             // assert
             Assert.False(result);
         }
-        
+
         [Fact]
         public void RetrieveBooleanPropertyFromCommandLine_WithAlternativeName()
         {
@@ -406,5 +406,244 @@
         }
 
         #endregion
+
+        #region RetrieveSimpleProperty from command line without alternative name
+
+        [Theory]
+        [InlineData("value", typeof(string))]
+        [InlineData(1, typeof(int))]
+        [InlineData(1.0, typeof(double))]
+        [InlineData(-1, typeof(int))]
+        [InlineData(-1.0, typeof(double))]
+        public void RetrieveSimpleProperty_JustFromCommandLine(object expectedValue, Type type)
+        {
+            // arrange
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(new[] { "example.exe", "--propertyName", $"{expectedValue}" });
+
+            if (type == typeof(string))
+            {
+                // act
+                var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine<string>("propertyName");
+
+                // assert
+                Assert.IsType<string>(result);
+                Assert.Equal(expectedValue, result);
+            }
+            else if (type == typeof(int))
+            {
+                // act
+                var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine<int>("propertyName");
+
+                // assert
+                Assert.IsType<int>(result);
+                Assert.Equal(expectedValue, result);
+            }
+            else if (type == typeof(double))
+            {
+                // act
+                var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine<double>("propertyName");
+
+                // assert
+                Assert.IsType<double>(result);
+                Assert.Equal(expectedValue, result);
+            }
+
+            // assert
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData("xyz", "property1")]
+        public void RetrieveSimpleProperty_JustFromCommandLine_FailedConversion(object expectedValue, string propertyName)
+        {
+            // arrange
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(new[] { "example.exe", "--property1", $"{expectedValue}" });
+
+            // act
+            var exception = Record.Exception(() => _propertyRetriever.RetrieveSimplePropertyFromCommandLine<int>(propertyName));
+
+            // assert
+            Assert.IsType<InvalidOperationException>(exception);
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+
+        }
+
+        [Fact]
+        public void RetrieveSimpleProperty_JustFromCommandLine_NoPropertyFound()
+        {
+            // act
+            var exception = Record.Exception(() => _propertyRetriever.RetrieveSimplePropertyFromCommandLine<int>(""));
+
+            // assert
+            Assert.IsType<InvalidOperationException>(exception);
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData("value")]
+        [InlineData(1)]
+        [InlineData(1.0)]
+        [InlineData(-1)]
+        [InlineData(-1.0)]
+        public void RetrieveSimpleProperty_JustFromCommandLine_WithDefaultValue(object defaultValue)
+        {
+            // act
+            var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine("property", defaultValue);
+
+            // assert
+            Assert.Equal(result, defaultValue);
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData("value", new[] { "value1", "value2" })]
+        [InlineData(1, new object[] { 2, 3, 5 })]
+        public void RetrieveSimpleProperty_JustFromCommandLine_WithListOfValues_WithDefaultValue(object expectedValue, object[] possibleValues)
+        {
+            // arrange
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(new[] { "example.exe", "--propertyName", $"{expectedValue}" });
+
+            // act
+            var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine("propertyName", possibleValues, expectedValue);
+
+            // assert
+            Assert.Equal(expectedValue, result);
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData("value", new[] { "value1", "value2" })]
+        [InlineData(1, new object[] { 2, 3, 5 })]
+        public void RetrieveSimpleProperty_JustFromCommandLine_WithListOfValues_WithDefaultValue_NoPropertyFound(object expectedValue, object[] possibleValues)
+        {
+            // act
+            var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine("propertyName", possibleValues, expectedValue);
+
+            // assert
+            Assert.Equal(expectedValue, result);
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+        }
+
+        #endregion
+
+        #region RetrieveSimpleProperty from command line with alternative name
+
+        [Theory]
+        [InlineData("value", typeof(string))]
+        [InlineData(1, typeof(int))]
+        [InlineData(1.0, typeof(double))]
+        [InlineData(-1, typeof(int))]
+        [InlineData(-1.0, typeof(double))]
+        public void RetrieveSimpleProperty_JustFromCommandLine_WithAlternativeName(object expectedValue, Type type)
+        {
+            // arrange
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(new[] { "example.exe", "-prop", $"{expectedValue}" });
+
+            if (type == typeof(string))
+            {
+                // act
+                var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine<string>("propertyName", "prop");
+
+                // assert
+                Assert.IsType<string>(result);
+                Assert.Equal(expectedValue, result);
+            }
+            else if (type == typeof(int))
+            {
+                // act
+                var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine<int>("propertyName", "prop");
+
+                // assert
+                Assert.IsType<int>(result);
+                Assert.Equal(expectedValue, result);
+            }
+            else if (type == typeof(double))
+            {
+                // act
+                var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine<double>("propertyName", "prop");
+
+                // assert
+                Assert.IsType<double>(result);
+                Assert.Equal(expectedValue, result);
+            }
+
+            // assert
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData("xyz", "property1")]
+        public void RetrieveSimpleProperty_JustFromCommandLine_FailedConversion_WithAlternativeName(object expectedValue, string propertyName)
+        {
+            // arrange
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(new[] { "example.exe", "-property1", $"{expectedValue}" });
+
+            // act
+            var exception = Record.Exception(() => _propertyRetriever.RetrieveSimplePropertyFromCommandLine<int>("bigProperytyName", propertyName));
+
+            // assert
+            Assert.IsType<InvalidOperationException>(exception);
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+        }
+
+        [Fact]
+        public void RetrieveSimpleProperty_JustFromCommandLine_NoPropertyFound_WithAlternativeName()
+        {
+            // act
+            var exception = Record.Exception(() => _propertyRetriever.RetrieveSimplePropertyFromCommandLine<int>("propertyName", "prop"));
+
+            // assert
+            Assert.IsType<InvalidOperationException>(exception);
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData("value")]
+        [InlineData(1)]
+        [InlineData(1.0)]
+        [InlineData(-1)]
+        [InlineData(-1.0)]
+        public void RetrieveSimpleProperty_JustFromCommandLine_WithDefaultValue_WithAlternativeName(object defaultValue)
+        {
+            // act
+            var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine("property", "prop", defaultValue);
+
+            // assert
+            Assert.Equal(result, defaultValue);
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData("value", new[] { "value1", "value2" })]
+        [InlineData(1, new object[] { 2, 3, 5 })]
+        public void RetrieveSimpleProperty_JustFromCommandLine_WithListOfValues_WithDefaultValue_WithAlternativeName(object expectedValue, object[] possibleValues)
+        {
+            // arrange
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(new[] { "example.exe", "-property", $"{expectedValue}" });
+
+            // act
+            var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine("propertyName", "property", possibleValues, expectedValue);
+
+            // assert
+            Assert.Equal(expectedValue, result);
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+        }
+
+        [Theory]
+        [InlineData("value", new[] { "value1", "value2" })]
+        [InlineData(1, new object[] { 2, 3, 5 })]
+        public void RetrieveSimpleProperty_JustFromCommandLine_WithListOfValues_WithDefaultValue_NoPropertyFound_WithAlternativeName(object expectedValue, object[] possibleValues)
+        {
+            // act
+            var result = _propertyRetriever.RetrieveSimplePropertyFromCommandLine("propertyName", "property", possibleValues, expectedValue);
+
+            // assert
+            Assert.Equal(expectedValue, result);
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(It.IsAny<string>()), Times.Never);
+        }
+
+        #endregion
+
+
     }
 }
