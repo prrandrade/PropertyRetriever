@@ -430,10 +430,10 @@
         private bool ContainsCommandLineValue(string propertyName, string alternativePropertyShortName)
         {
             var containsPropName = !string.IsNullOrEmpty(propertyName) 
-                                   && _localEnvironment.GetCommandLineArgs().Contains($"--{propertyName.ToLower()}");
+                                   && _localEnvironment.GetCommandLineArgs().Contains($"--{propertyName}");
 
             var containsShortPropName = !string.IsNullOrEmpty(alternativePropertyShortName)
-                                    && _localEnvironment.GetCommandLineArgs().Contains($"-{alternativePropertyShortName.ToLower()}");
+                                    && _localEnvironment.GetCommandLineArgs().Contains($"-{alternativePropertyShortName}");
 
             return containsPropName || containsShortPropName;
 

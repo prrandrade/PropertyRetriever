@@ -350,5 +350,61 @@
         }
 
         #endregion
+
+        #region RetrieveBooleanPropertyFromCommandLine
+
+        [Fact]
+        public void RetrieveBooleanPropertyFromCommandLine()
+        {
+            // arrange
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(new[] { "example.exe", "--propertyName" });
+
+            // act
+            var result = _propertyRetriever.RetrieveBooleanPropertyFromCommandLine("propertyName");
+
+            // assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void RetrieveBooleanPropertyFromCommandLine_NotFound()
+        {
+            // arrange
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(new[] { "example.exe", "--propertyName" });
+
+            // act
+            var result = _propertyRetriever.RetrieveBooleanPropertyFromCommandLine("otherPropertyName");
+
+            // assert
+            Assert.False(result);
+        }
+        
+        [Fact]
+        public void RetrieveBooleanPropertyFromCommandLine_WithAlternativeName()
+        {
+            // arrange
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(new[] { "example.exe", "-prop" });
+
+            // act
+            var result = _propertyRetriever.RetrieveBooleanPropertyFromCommandLine("propertyName", "prop");
+
+            // assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void RetrieveBooleanPropertyFromCommandLine_NotFound_WithAlternativeName()
+        {
+            // arrange
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(new[] { "example.exe", "-prop" });
+
+            // act
+            var result = _propertyRetriever.RetrieveBooleanPropertyFromCommandLine("otherPropertyName");
+
+            // assert
+            Assert.False(result);
+        }
+
+        #endregion
     }
 }
