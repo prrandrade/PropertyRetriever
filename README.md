@@ -4,6 +4,8 @@
 
 This small project can be used to access command-line parameters or environment variables using dependency injection on .NET Core Projects.
 
+Nuget package: https://www.nuget.org/packages/PropertyRetriever/
+
 ### Project installation
 
 Using the native .NET Core dependency injection framework, the installation consists of a single extension method that adds the injection in a `IServiceCollection`. For a .NET Core API project, for example, the configuration is added on the `ConfigureServices` method:
