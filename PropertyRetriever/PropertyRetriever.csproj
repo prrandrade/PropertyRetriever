@@ -2,6 +2,17 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+    <PackageId>PropertyRetriever</PackageId>
+    <PackageDescription>Injected dependency for retrieve properties passed via command line or environment</PackageDescription>
+    <Authors><![CDATA[Paulo Roberto Ramos de Andrade]]></Authors>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <RepositoryUrl>https://github.com/prrandrade/PropertyRetriever</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>environment;commandline;property;dependency injection;dependency</PackageTags>
+    <PackageReleaseNotes>New release with rewritten methods and unit tests</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
