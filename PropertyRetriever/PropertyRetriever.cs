@@ -465,8 +465,8 @@
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private string RetrieveEnvironmentValue(string propertyName, string alternativeShortName)
         {
-            var valueGivenProperytyName = _localEnvironment.GetEnvironmentVariable(propertyName);
-            var valueGivenAlternativeShortName = _localEnvironment.GetEnvironmentVariable(alternativeShortName);
+            var valueGivenProperytyName = propertyName != null ? _localEnvironment.GetEnvironmentVariable(propertyName) : null;
+            var valueGivenAlternativeShortName = alternativeShortName != null ? _localEnvironment.GetEnvironmentVariable(alternativeShortName) : null;
 
             return valueGivenProperytyName ?? valueGivenAlternativeShortName;
         }

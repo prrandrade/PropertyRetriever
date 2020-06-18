@@ -12,7 +12,7 @@
     <RepositoryUrl>https://github.com/prrandrade/PropertyRetriever</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>environment;commandline;property;dependency injection;dependency</PackageTags>
-    <PackageReleaseNotes>New release with rewritten methods and unit tests</PackageReleaseNotes>
+    <PackageReleaseNotes>Small bugfix with null environment properties</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
