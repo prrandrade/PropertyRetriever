@@ -29,7 +29,9 @@
 
         public string GetEnvironmentVariable(string name)
         {
-            return Environment.GetEnvironmentVariable(name);
+            return !string.IsNullOrEmpty(name) 
+                ? Environment.GetEnvironmentVariable(name) 
+                : throw new InvalidOperationException("No environment variable was found.");
         }
     }
 }
