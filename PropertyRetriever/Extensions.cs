@@ -1,9 +1,11 @@
 ﻿namespace PropertyRetriever
 {
+    using Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
+    using Services;
 
-    public static class PropertyRetrieverExtensions
+    public static class Extensions
     {
         /// <summary>
         /// Add MyEnvironment dependency injection

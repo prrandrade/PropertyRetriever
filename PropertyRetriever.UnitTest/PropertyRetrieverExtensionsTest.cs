@@ -1,10 +1,9 @@
 namespace PropertyRetriever.UnitTest
 {
-    using System.Diagnostics.CodeAnalysis;
+    using Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using Xunit;
 
-    [ExcludeFromCodeCoverage]
     public class PropertyRetrieverExtensionsTest
     {
         [Fact]

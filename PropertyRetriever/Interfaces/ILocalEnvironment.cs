@@ -1,8 +1,5 @@
-﻿namespace PropertyRetriever
+﻿namespace PropertyRetriever.Interfaces
 {
-    using System;
-    using System.Diagnostics.CodeAnalysis;
-
     public interface ILocalEnvironment
     {
         /// <summary>
@@ -17,21 +14,5 @@
         /// <param name="name">Environment variable name</param>
         /// <returns>Environment variable value or null when no environment variable with given name is found</returns>
         string GetEnvironmentVariable(string name);
-    }
-
-    [ExcludeFromCodeCoverage]
-    public class LocalEnvironment : ILocalEnvironment
-    {
-        public string[] GetCommandLineArgs()
-        {
-            return Environment.GetCommandLineArgs();
-        }
-
-        public string GetEnvironmentVariable(string name)
-        {
-            return !string.IsNullOrEmpty(name) 
-                ? Environment.GetEnvironmentVariable(name) 
-                : throw new InvalidOperationException("No environment variable was found.");
-        }
     }
 }
