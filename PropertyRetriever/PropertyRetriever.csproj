@@ -13,6 +13,8 @@
     <RepositoryType>git</RepositoryType>
     <PackageTags>environment;commandline;property;dependency injection;dependency</PackageTags>
     <PackageReleaseNotes>Small bugfix with null environment properties</PackageReleaseNotes>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
   </PropertyGroup>
 
   <ItemGroup>
