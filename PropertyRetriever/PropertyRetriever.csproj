@@ -7,7 +7,6 @@
     <PackageId>PropertyRetriever</PackageId>
     <PackageDescription>Injected dependency for retrieve properties passed via command line or environment</PackageDescription>
     <Authors><![CDATA[Paulo Roberto Ramos de Andrade]]></Authors>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <RepositoryUrl>https://github.com/prrandrade/PropertyRetriever</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
