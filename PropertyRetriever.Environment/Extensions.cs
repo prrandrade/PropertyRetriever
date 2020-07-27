@@ -7,16 +7,11 @@
 
     public static class Extensions
     {
-        public static T RetrieveSimplePropertyFromEnvironment<T>(this IPropertyRetriever propertyRetriever, string propertyName)
-        {
-            return propertyRetriever.RetrievePropertyFromEnvironment<T>(propertyName);
-        }
-
-        public static T RetrieveSimplePropertyFromEnvironment<T>(this IPropertyRetriever propertyRetriever, string propertyName, T defaultFallbackValue)
+        public static T RetrieveFromEnvironment<T>(this IPropertyRetriever propertyRetriever, string propertyName, T defaultFallbackValue)
         {
             try
             {
-                return propertyRetriever.RetrievePropertyFromEnvironment<T>(propertyName);
+                return propertyRetriever.RetrieveFromEnvironment<T>(propertyName);
             }
             catch
             {
@@ -24,9 +19,9 @@
             }
         }
 
-        public static T RetrieveSimplePropertyFromEnvironment<T>(this IPropertyRetriever propertyRetriever, string propertyName, IEnumerable<T> possibleValues)
+        public static T RetrieveFromEnvironment<T>(this IPropertyRetriever propertyRetriever, string propertyName, IEnumerable<T> possibleValues)
         {
-            var result = propertyRetriever.RetrievePropertyFromEnvironment<T>(propertyName);
+            var result = propertyRetriever.RetrieveFromEnvironment<T>(propertyName);
 
             if (possibleValues == null)
                 return result;
@@ -37,11 +32,11 @@
             return result;
         }
 
-        public static T RetrieveSimplePropertyFromEnvironment<T>(this IPropertyRetriever propertyRetriever, string propertyName, IEnumerable<T> possibleValues, T defaultFallbackValue)
+        public static T RetrieveFromEnvironment<T>(this IPropertyRetriever propertyRetriever, string propertyName, IEnumerable<T> possibleValues, T defaultFallbackValue)
         {
             try
             {
-                return propertyRetriever.RetrieveSimplePropertyFromEnvironment(propertyName, possibleValues);
+                return propertyRetriever.RetrieveFromEnvironment(propertyName, possibleValues);
             }
             catch
             {

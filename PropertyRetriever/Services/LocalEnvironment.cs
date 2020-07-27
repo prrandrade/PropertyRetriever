@@ -12,9 +12,15 @@
 
         public string GetEnvironmentVariable(string name)
         {
-            return !string.IsNullOrEmpty(name) 
-                ? Environment.GetEnvironmentVariable(name) 
-                : throw new InvalidOperationException("No environment variable was found.");
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("You must provide an environment variable name.");
+
+            var result = Environment.GetEnvironmentVariable(name);
+
+            if (string.IsNullOrEmpty(result))
+                throw new InvalidOperationException($"No environment variable with name {name} was found.");
+
+            return result;
         }
     }
 }
