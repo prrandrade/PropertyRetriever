@@ -18,11 +18,20 @@
         /// <summary>
         /// Retrieve a value from the environment variable set and convert to a specific type.
         /// </summary>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <returns>Environment variable value.</returns>
+        /// <exception cref="ArgumentException">Thrown when the environment variable name is not valid.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
+        public string RetrieveFromEnvironment(string variableName) => RetrieveFromEnvironment<string>(variableName);
+
+        /// <summary>
+        /// Retrieve a value from the environment variable set and convert to a specific type.
+        /// </summary>
         /// <typeparam name="T">Desired type that the environment variable value will be converted.</typeparam>
         /// <param name="variableName">Environment variable name.</param>
         /// <returns>Environment variable value converted to <typeparamref name="T"/>.</returns>
-        /// <exception cref="System.ArgumentException">Thrown when the environment variable name is not valid.</exception>
-        /// <exception cref="System.InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
+        /// <exception cref="ArgumentException">Thrown when the environment variable name is not valid.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
         public T RetrieveFromEnvironment<T>(string variableName)
         {
             var environmentValue = _localEnvironment.GetEnvironmentVariable(variableName);
@@ -46,7 +55,7 @@
         /// <param name="propertyLongName">Optional property long name (identified with -- as a command line parameter).</param>
         /// <param name="propertyShortName">Optional property short name (identified with - as a command line parameter).</param>
         /// <returns>True if at least one property is found, False otherwise.</returns>
-        /// <exception cref="System.ArgumentException">Thrown if <paramref name="propertyLongName"/> and <paramref name="propertyShortName"/> are not provided.</exception>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="propertyLongName"/> and <paramref name="propertyShortName"/> are not provided.</exception>
         public bool CheckFromCommandLine(string propertyLongName = null, string propertyShortName = null)
         {
             if (propertyLongName == null && propertyShortName == null)
@@ -61,12 +70,22 @@
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
         /// </summary>
+        /// <param name="propertyLongName">Optional property long name (identified with -- as a command line parameter).</param>
+        /// <param name="propertyShortName">Optional property short name (identified with - as a command line parameter).</param>
+        /// <returns>List of properties retrieved from command line.</returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="propertyLongName"/> and <paramref name="propertyShortName"/> are not provided.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the conversion for string can not be processed.</exception>
+        public IEnumerable<string> RetrieveFromCommandLine(string propertyLongName = null, string propertyShortName = null) => RetrieveFromCommandLine<string>(propertyLongName, propertyShortName);
+
+        /// <summary>
+        /// Retrieve a list of values passed from the command line, converted to a specific type.
+        /// </summary>
         /// <typeparam name="T">Desired type that all the retrieved properties will be converted.</typeparam>
         /// <param name="propertyLongName">Optional property long name (identified with -- as a command line parameter).</param>
         /// <param name="propertyShortName">Optional property short name (identified with - as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line converted to the specified type.</returns>
-        /// <exception cref="System.ArgumentException">Thrown if <paramref name="propertyLongName"/> and <paramref name="propertyShortName"/> are not provided.</exception>
-        /// <exception cref="System.InvalidOperationException">Thrown if the conversion for <typeparamref name="T"/> can not be processed.</exception>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="propertyLongName"/> and <paramref name="propertyShortName"/> are not provided.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the conversion for <typeparamref name="T"/> can not be processed.</exception>
         public IEnumerable<T> RetrieveFromCommandLine<T>(string propertyLongName = null, string propertyShortName = null)
         {
             if (propertyLongName == null && propertyShortName == null)

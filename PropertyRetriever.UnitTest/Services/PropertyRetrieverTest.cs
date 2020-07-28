@@ -1,6 +1,7 @@
 ﻿namespace PropertyRetriever.UnitTest.Services
 {
     using System;
+    using System.Security;
     using Interfaces;
     using Moq;
     using PropertyRetriever.Services;
@@ -18,6 +19,23 @@
         }
 
         #region RetrieveFromEnvironment
+
+        [Fact]
+        public void RetrieveFromEnvironment_String()
+        {
+            // arrange
+            const string variableName = "variableName";
+            const string variableValue = "variableValue";
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Returns(variableValue);
+
+            // act
+            var result = _propertyRetriever.RetrieveFromEnvironment(variableName);
+
+            // assert
+            Assert.Equal(variableValue, result);
+        }
 
         [Theory]
         [InlineData("test", "test")]
@@ -178,6 +196,31 @@
 
             // act
             var result = _propertyRetriever.RetrieveFromCommandLine<T>(longPropertyName, shortPropertyName);
+
+            // assert
+            Assert.Equal(new[] { value1, value2, value3, value4 }, result);
+        }
+
+        [Theory]
+        [InlineData("firstValue", "secondValue", "thirdValue", "fourthValue", "firstValue", "secondValue", "thirdValue", "fourthValue")]
+        public void RetrieveFromCommandLine_String(string property1, string property2, string property3, string property4, string value1, string value2, string value3, string value4)
+        {
+            // arrange
+            const string longPropertyName = "longPropertyName";
+            const string shortPropertyName = "shortPropertyName";
+
+            var parameters = new[]
+            {
+                "program.exe",
+                $"--{longPropertyName}", property1,
+                $"-{shortPropertyName}", property2,
+                $"-{shortPropertyName}", property3,
+                $"--{longPropertyName}", property4
+            };
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine(longPropertyName, shortPropertyName);
 
             // assert
             Assert.Equal(new[] { value1, value2, value3, value4 }, result);
