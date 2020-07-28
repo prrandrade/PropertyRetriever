@@ -1,12 +1,26 @@
-# PropertyRetriever
+PropertyRetriever
 
-### Introduction
+====================================
+
+# Summary
+
+- [Introduction](#introduction)
+- [Package Installation](package-installation)
+- [Retrieving variables from the Environment](#retrieving-variables-from-the-environment)
+- [Checking parameters from Command Line](#checking-parameters-from-command-line)
+- [Retrieving parameters from Command Line](#retrieving-parameters-from-command-line)
+
+
+
+# Introduction
 
 This small project can be used to access command-line parameters or environment variables using dependency injection on .NET Core Projects.
 
-Nuget package: https://www.nuget.org/packages/PropertyRetriever/
+Nuget package: https://www.nuget.org/packages/PropertyRetriever/.
 
-### Project installation
+
+
+# Package Installation
 
 Using the native .NET Core dependency injection framework, the installation consists of a single extension method that adds the injection in a `IServiceCollection`. For a .NET Core API project, for example, the configuration is added on the `ConfigureServices` method:
 
@@ -17,7 +31,7 @@ public void ConfigureServices(IServiceCollection services)
 }
 ```
 
-For a console application, the ServiceCollection must be manually initialized:
+For a console application, the `ServiceCollection` must be manually initialized:
 
 ```csharp
 var services = new ServiceCollection();
@@ -26,102 +40,89 @@ services.AddPropertyRetriever();
 
 If you use another dependency injection framework, two dependencies must be injected:
 
-- Interface `ILocalEnvironment` and implementation `LocalEnvironment`
-- Interface `IPropertyRetriever` and implementation `PropertyRetriever`
+- Interface `ILocalEnvironment` and implementation `LocalEnvironment`.
+- Interface `IPropertyRetriever` and implementation `PropertyRetriever`.
 
 The interface `IPropertyRetriever` can be injected on classes that will access the environment or the command line.
 
-### How to pass properties
 
-There are four ways that the PropertyRetriever Package read properties, always using the same order:
 
-- The **command line** with a long property name preceded with two dashes. The property value will be the first text found after the property name, like `--propertyName propertyValue`
-- The **command line** with a short property name preceded with one dash. The property value will be the first text found after the property name, like `-p propertyValue`
-- The **environment** with a long property name (without the preceding dashes).
-- The **environment** with a short property name (without the preceding dash).
-
-### Examples
+# Retrieving variables from the Environment
 
 As explained before, the interface `IPropertyRetriever` can be injected on any class and can be used to retrieve values from the environment or the command line.
 
 ```csharp
 public class SomeClass
 {
-	private readonly IPropertyRetriever _propertyRetriever;
+	private readonly IPropertyRetriever propertyRetriever;
 	
 	public SomeClass(IPropertyRetriever propertyRetriever)
 	{
-		_propertyRetriever = propertyRetriever;
+		this.propertyRetriever = propertyRetriever;
 	}
 }
 ```
 
-When you what to retrieve a simple property, the method `RetrieveSimpleProperty` can be used and will try to convert the property:
-
-```
-int result1 = propertyRetriever.RetrieveSimpleProperty<int>("propertyName");
-```
-
-If you want a default value to be retrieved if the property is not found:
-
-```
-double result2 = propertyRetriever.RetrieveSimpleProperty("propertyName", 2.0);
-```
-
-If you want to check for a list of specific values and a default value if the check fails:
-
-```
-string result3 = propertyRetriever.RetrieveSimpleProperty("propertyName", new[] { "possibleValue1", "possibleValue2" }, "defaultValue");
-```
-
-All these examples can be used to retrieve properties also the short name:
+To retrieve a environment variable, simply use:
 
 ```csharp
-int result4 = propertyRetriever.RetrieveSimpleProperty<int>("propertyName", "pn");
-double result5 = propertyRetriever.RetrieveSimpleProperty("propertyName", "pn", 2.0);
-string result6 = propertyRetriever.RetrieveSimpleProperty("propertyName", "pn" new[] { "possibleValue1", "possibleValue2" }, "defaultValue");
+string result1 = propertyRetriever.RetrieveFromEnvironment("variableName");
 ```
 
-If you want only to check properties from the command line, the method `RetrieveSimplePropertyFromCommandLine` can be used, with the same approach:
+You can use the generic version of this method to convert the retrieved environment variable:
 
 ```csharp
-int result1 = propertyRetriever.RetrieveSimplePropertyFromCommandLine<int>("propertyName");
-double result2 = propertyRetriever.RetrieveSimplePropertyFromCommandLine("propertyName", 2.0);
-string result3 = propertyRetriever.RetrieveSimplePropertyFromCommandLine("propertyName", new[] { "possibleValue1", "possibleValue2" }, "defaultValue");
-
-int result4 = propertyRetriever.RetrieveSimplePropertyFromCommandLine<int>("propertyName", "pn");
-double result5 = propertyRetriever.RetrieveSimplePropertyFromCommandLine("propertyName", "pn", 2.0);
-string result6 = propertyRetriever.RetrieveSimplePropertyFromCommandLine("propertyName", "pn" new[] { "possibleValue1", "possibleValue2" }, "defaultValue");
+string result2 = propertyRetriever.RetrieveFromEnvironment<string>("variableName");
+int result3 = propertyRetriever.RetrieveFromEnvironment<int>("variableName");
+double result4 = propertyRetriever.RetrieveFromEnvironment<double>("variableName");
+char result5 = propertyRetriever.RetrieveFromEnvironment<char>("variableName");
+bool result6 = propertyRetriever.RetrieveFromEnvironment<bool>("variableName");
 ```
 
-If you need a boolean property from the command line (true if a property is found, false otherwise), the method `RetrieveBooleanPropertyFromCommandLine` can be used:
+The method `RetrieveFromEnvironment` can throw an `ArgumentException` if the environment variable name is invalid or a `InvalidOperationException` if the variable is not found or can not be converted.
+
+
+
+# Checking parameters from Command Line
+
+To simply check if a property is set via command line, using the patterns --*longPropertyName* (two dashes) and -*shortPropertyName* (one dash), simply use:
 
 ```csharp
-bool result1 = propertyRetriever.RetrieveBooleanPropertyFromCommandLine("propertyName");
-bool result2 = propertyRetriever.RetrieveBooleanPropertyFromCommandLine("propertyName", "pn");
+bool propertyIsSet1 = propertyRetriever.CheckFromCommandLine("longPropertyName", "shortPropertyName");
 ```
 
-Finally, if you need to retrieve a list of separated values on the same property, the method `RetrieveListProperty` can be used, defining a custom separator (semi comma is the default choice):
+In this case, if at least one `--longPropertyName` or `-shortPropertyName` is set, the result will be `true`. You don't need to pass both names, of course:
 
 ```csharp
-IEnumerable<int> result1 = propertyRetriever.RetrieveListProperty<int>("propertyName");
-IEnumerable<string> result2 = propertyRetriever.RetrieveListProperty("propertyName", new[]{ "defaultValue1", "defautlValue2" }, '|'); // pipe as separator
-IEnumerable<int> result3 = propertyRetriever.RetrieveListProperty<int>("propertyName", "pn", ','); // comma as separator
-IEnumerable<string> result4 = propertyRetriever.RetrieveListProperty("propertyName", "pn", new[]{ "defaultValue1", "defautlValue2" });
+bool propertyIsSet2 = propertyRetriever.CheckFromCommandLine(propertyLongName: "longPropertyName");
+bool propertyIsSet3 = propertyRetriever.CheckFromCommandLine(propertyShortName: "shortPropertyName");
 ```
 
-You can retrieve a list of separated values on the same property only from the command line, using the method `RetrieveListPropertyFromCommandLine`:
+The method `CheckForCommandLine` can throw an `ArgumentException` if neither property name is passed (at least one property name must be called).
+
+
+
+# Retrieving parameters from Command Line
+
+If you retrieve one or more property values from the command line, the method `RetrieveFromCommandLine` can be easily used:
 
 ```csharp
-IEnumerable<int> result1 = propertyRetriever.RetrieveListPropertyFromCommandLine<int>("propertyName");
-IEnumerable<string> result2 = propertyRetriever.RetrieveListPropertyFromCommandLine("propertyName", new[]{ "defaultValue1", "defautlValue2" }, '|'); // pipe as separator
-IEnumerable<int> result3 = propertyRetriever.RetrieveListPropertyFromCommandLine<int>("propertyName", "pn", ','); // comma as separator
-IEnumerable<string> result4 = propertyRetriever.RetrieveListPropertyFromCommandLine("propertyName", "pn", new[]{ "defaultValue1", "defautlValue2" });
+IEnumerable<string> values1 = propertyRetriever.RetrieveFromCommandLine("longPropertyName", "shortPropertyName");
 ```
 
-### Next Steps
+If the command line is like: program.exe --longProperyName **value1** -shortPropertyName **value2** -shortPropertyName **value3**, then the result will be `{"value1", "value2", "value3"}`.
 
-- [X] Version 1.0.0 on Nuget 
-- [ ] Add way to retrieve multiple properties with same name 
-- [ ] Add way to retrive properties with multiple values
+The operation of this method is like the the previous `CheckFromCommandLine` method; you can pass just the long property name or the short property name. And a generic variant will convert the retrieved values:
+
+```csharp
+IEnumerable<string> values2 = propertyRetriver.RetriveFromCommandLine<string>(propertyLongName: "longPropertyName");
+IEnumerable<int> values2 = propertyRetriver.RetriveFromCommandLine<int>(propertyLongName: "longPropertyName");
+IEnumerable<double> values2 = propertyRetriver.RetriveFromCommandLine<double>(propertyLongName: "longPropertyName");
+IEnumerable<char> values2 = propertyRetriver.RetriveFromCommandLine<char>(propertyShortName: "shortPropertyName");
+IEnumerable<bool> values2 = propertyRetriver.RetriveFromCommandLine<bool>(propertyShortName: "shortPropertyName");
+```
+
+The method `RetriveFromCommandLine` can throw an `ArgumentException` if neither property name is passed (at least one property name must be called) or a `InvalidOperationException` if the conversion is not possible. If no value is retrieved, then then returned `IEnumerable` is empty.
+
+
 
