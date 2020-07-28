@@ -1,5 +1,4 @@
 PropertyRetriever
-
 ====================================
 
 # Summary
