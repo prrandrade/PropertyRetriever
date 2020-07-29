@@ -84,17 +84,17 @@ The method `RetrieveFromEnvironment` can throw an `ArgumentException` if the env
 
 # Checking parameters from Command Line
 
-To simply check if a property is set via command line, using the patterns --*longPropertyName* (two dashes) and -*shortPropertyName* (one dash), simply use:
+To simply check if a property is set via command line, using the patterns --*longName* (two dashes followed by a `string`) and -*l* (one dash, followed by a `char`), simply use:
 
 ```csharp
-bool propertyIsSet1 = propertyRetriever.CheckFromCommandLine("longPropertyName", "shortPropertyName");
+bool propertyIsSet1 = propertyRetriever.CheckFromCommandLine("longName", "l");
 ```
 
-In this case, if at least one `--longPropertyName` or `-shortPropertyName` is set, the result will be `true`. You don't need to pass both names, of course:
+In this case, if at least one `--longName` or `-l` is set, the result will be `true`. You don't need to pass both names, of course:
 
 ```csharp
-bool propertyIsSet2 = propertyRetriever.CheckFromCommandLine(propertyLongName: "longPropertyName");
-bool propertyIsSet3 = propertyRetriever.CheckFromCommandLine(propertyShortName: "shortPropertyName");
+bool propertyIsSet2 = propertyRetriever.CheckFromCommandLine("longPropertyName");
+bool propertyIsSet3 = propertyRetriever.CheckFromCommandLine('s');
 ```
 
 This method is also valid if multiple short property names are grouped with the same prefix. For example, image this two command lines:
@@ -104,15 +104,15 @@ command.exe -a -b -c
 command.exe -abc
 ```
 
-The method `CheckFromCommandLine` can be used to check if the property **a** is set for both scenarios:
+The method `CheckFromCommandLine` can be used to check if the property *a* is set for both scenarios:
 
 ```csharp
-bool propertyIsSet4 = propertyRetriever.CheckFromCommandLine(propertyShortName: "a");
+bool propertyIsSet4 = propertyRetriever.CheckFromCommandLine('a');
 ```
 
 The method `CheckForCommandLine` can throw an `ArgumentException` if neither property name is passed (at least one property name must be called).
 
-Take note that this method is **case insensive**, so `-shortProperty` and `-SHORTPROPERTY` represent the **same** property.
+Take note that this method is **case insensive**, so `-s` and `-S` represent the **same** property. The same values for *-longName* and *-LONGNAME*.
 
 
 
@@ -121,21 +121,29 @@ Take note that this method is **case insensive**, so `-shortProperty` and `-SHOR
 If you retrieve one or more property values from the command line, the method `RetrieveFromCommandLine` can be easily used:
 
 ```csharp
-IEnumerable<string> values1 = propertyRetriever.RetrieveFromCommandLine("longPropertyName", "shortPropertyName");
+IEnumerable<string> values1 = propertyRetriever.RetrieveFromCommandLine("longName", 'l');
 ```
 
-If the command line is like: program.exe --longProperyName **value1** -shortPropertyName **value2** -shortPropertyName **value3**, then the result will be `{"value1", "value2", "value3"}`.
+As before, you can pass just one name:
+
+```csharp
+IEnumerable<string> values1 = propertyRetriever.RetrieveFromCommandLine('l');
+IEnumerable<string> values2 = propertyRetriever.RetrieveFromCommandLine("longName", 'l');
+```
+
+If the command line is like: *program.exe --longName **value1** -s **value2** -s **value3***, then the result will be `{"value1", "value2", "value3"}`.
 
 The operation of this method is like the the previous `CheckFromCommandLine` method; you can pass just the long property name or the short property name. And a generic variant will convert the retrieved values:
 
 ```csharp
-IEnumerable<string> values2 = propertyRetriver.RetriveFromCommandLine<string>(propertyLongName: "longPropertyName");
-IEnumerable<int> values2 = propertyRetriver.RetriveFromCommandLine<int>(propertyLongName: "longPropertyName");
-IEnumerable<double> values2 = propertyRetriver.RetriveFromCommandLine<double>(propertyLongName: "longPropertyName");
-IEnumerable<char> values2 = propertyRetriver.RetriveFromCommandLine<char>(propertyShortName: "shortPropertyName");
-IEnumerable<bool> values2 = propertyRetriver.RetriveFromCommandLine<bool>(propertyShortName: "shortPropertyName");
+IEnumerable<string> values2 = propertyRetriver.RetriveFromCommandLine<string>("longName");
+IEnumerable<int> values2 = propertyRetriver.RetriveFromCommandLine<int>("longName");
+IEnumerable<double> values2 = propertyRetriver.RetriveFromCommandLine<double>("longPropertyName", 'l');
+IEnumerable<char> values2 = propertyRetriver.RetriveFromCommandLine<char>('l');
+IEnumerable<bool> values2 = propertyRetriver.RetriveFromCommandLine<bool>('l');
 ```
 
 The method `RetriveFromCommandLine` can throw an `ArgumentException` if neither property name is passed (at least one property name must be called) or a `InvalidOperationException` if the conversion is not possible. If no value is retrieved, then then returned `IEnumerable` is empty.
 
-Take note that this method is **case insensitive**, so `--Property 1` and `-PROPERTY 2` represent the same property with two values. The call `propertyRetriver.RetriveFromCommandLine<int>(propertyLongName: "property");` will return a `IEnumerable<int>` with values **1** and **2**.
+Take note that this method is **case insensitive**, so *--Property **1***  and *-PROPERTY **2*** represent the same property with two values. The call `propertyRetriver.RetriveFromCommandLine<int>("property");` will return a `IEnumerable<int>` with values **1** and **2**. This applies to short names as well, so, *-C* and *-c* refer to the same property. 
+
