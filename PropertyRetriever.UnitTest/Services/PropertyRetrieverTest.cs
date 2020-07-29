@@ -327,7 +327,7 @@
             _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
 
             // act
-            var result = _propertyRetriever.RetrieveFromCommandLine<string>(shortName);
+            var result = _propertyRetriever.RetrieveFromCommandLine(shortName);
 
             // assert
             Assert.Equal(value, result.ToList()[0]);
