@@ -97,6 +97,19 @@ bool propertyIsSet2 = propertyRetriever.CheckFromCommandLine(propertyLongName: "
 bool propertyIsSet3 = propertyRetriever.CheckFromCommandLine(propertyShortName: "shortPropertyName");
 ```
 
+This method is also valid if multiple short property names are grouped with the same prefix. For example, image this two command lines:
+
+```shell
+command.exe -a -b -c
+command.exe -abc
+```
+
+The method `CheckFromCommandLine` can be used to check if the property **a** is set for both scenarios:
+
+```csharp
+bool propertyIsSet4 = propertyRetriever.CheckFromCommandLine(propertyShortName: "a");
+```
+
 The method `CheckForCommandLine` can throw an `ArgumentException` if neither property name is passed (at least one property name must be called).
 
 
