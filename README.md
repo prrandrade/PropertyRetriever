@@ -97,7 +97,7 @@ bool propertyIsSet2 = propertyRetriever.CheckFromCommandLine("longPropertyName")
 bool propertyIsSet3 = propertyRetriever.CheckFromCommandLine('s');
 ```
 
-This method is also valid if multiple short property names are grouped with the same prefix. For example, image this two command lines:
+This method is also valid if multiple short property names are grouped with the same prefix. For example, with this two command lines:
 
 ```shell
 command.exe -a -b -c
