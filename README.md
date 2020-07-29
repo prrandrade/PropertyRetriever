@@ -112,6 +112,8 @@ bool propertyIsSet4 = propertyRetriever.CheckFromCommandLine(propertyShortName: 
 
 The method `CheckForCommandLine` can throw an `ArgumentException` if neither property name is passed (at least one property name must be called).
 
+Take note that this method is **case insensive**, so `-shortProperty` and `-SHORTPROPERTY` represent the **same** property.
+
 
 
 # Retrieving parameters from Command Line
@@ -136,5 +138,4 @@ IEnumerable<bool> values2 = propertyRetriver.RetriveFromCommandLine<bool>(proper
 
 The method `RetriveFromCommandLine` can throw an `ArgumentException` if neither property name is passed (at least one property name must be called) or a `InvalidOperationException` if the conversion is not possible. If no value is retrieved, then then returned `IEnumerable` is empty.
 
-
-
+Take note that this method is **case insensitive**, so `--Property 1` and `-PROPERTY 2` represent the same property with two values. The call `propertyRetriver.RetriveFromCommandLine<int>(propertyLongName: "property");` will return a `IEnumerable<int>` with values **1** and **2**.
