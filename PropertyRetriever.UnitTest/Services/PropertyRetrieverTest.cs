@@ -1,7 +1,7 @@
 ﻿namespace PropertyRetriever.UnitTest.Services
 {
     using System;
-    using System.Security;
+    using System.Linq;
     using Interfaces;
     using Moq;
     using PropertyRetriever.Services;
@@ -103,35 +103,88 @@
 
             // assert
             Assert.IsType<ArgumentException>(result);
-            Assert.Equal("You need to supply a propertyLongName and/or a propertyShortName.", result.Message);
+            Assert.Equal("You need to supply a longName and/or a shortName.", result.Message);
         }
 
         [Fact]
         public void CheckFromCommandLine_NoPropertyFound()
         {
             // assert
-            var parameters = new[] { "program.exe", "--longPropertyName", "-shortPropertyName" };
+            var parameters = new[] { "program.exe", "--longName", "-l" };
             _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
 
             // act
-            var result = _propertyRetriever.CheckFromCommandLine("longProperty", "shortProperty");
+            var result = _propertyRetriever.CheckFromCommandLine("someName", 's');
 
             // assert
             Assert.False(result);
         }
 
         [Theory]
-        [InlineData("longPropertyName", null)]
-        [InlineData(null, "shortPropertyName")]
-        [InlineData("longPropertyName", "shortPropertyName")]
-        public void CheckFromCommandLine_PropertyFound(string longPropertyName, string shortPropertyName)
+        [InlineData("longName", null)]
+        [InlineData(null, 'l')]
+        [InlineData("longName", 'l')]
+        public void CheckFromCommandLine_PropertyFound(string longName, char? shortName)
         {
             // assert
-            var parameters = new[] { "program.exe", "--longPropertyName", "-shortPropertyName" };
+            var parameters = new[] { "program.exe", "--longName", "-l" };
             _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
 
             // act
-            var result = _propertyRetriever.CheckFromCommandLine(longPropertyName, shortPropertyName);
+            var result = _propertyRetriever.CheckFromCommandLine(longName, shortName);
+
+            // assert
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData("longName")]
+        [InlineData("LONGNAME")]
+        [InlineData("longname")]
+        [InlineData("LonGnAME")]
+        public void CheckFromCommandLine_LongNameCaseInsensitive(string longName)
+        {
+            // assert
+            var parameters = new[] { "program.exe", "--longName" };
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
+
+            // act
+            var result = _propertyRetriever.CheckFromCommandLine(longName);
+
+            // assert
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData('a')]
+        [InlineData('A')]
+        [InlineData('b')]
+        [InlineData('B')]
+        public void CheckFromCommandLine_ShortNameCaseInsensitive(char shortName)
+        {
+            // assert
+            var parameters = new[] { "program.exe", "-aB -A -b" };
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
+
+            // act
+            var result = _propertyRetriever.CheckFromCommandLine(shortName);
+
+            // assert
+            Assert.True(result);
+        }
+
+        [Theory]
+        [InlineData('a')]
+        [InlineData('b')]
+        [InlineData('c')]
+        public void CheckFromCommandLine_GroupedShortName(char shortName)
+        {
+            // assert
+            var parameters = new[] { "program.exe", "-dbca" };
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
+
+            // act
+            var result = _propertyRetriever.CheckFromCommandLine(shortName);
 
             // assert
             Assert.True(result);
@@ -151,7 +204,7 @@
 
             // assert
             Assert.IsType<ArgumentException>(result);
-            Assert.Equal("You need to supply a propertyLongName and/or a propertyShortName.", result.Message);
+            Assert.Equal("You need to supply a longName and/or a shortName.", result.Message);
         }
 
         [Fact]
@@ -162,7 +215,7 @@
             _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
 
             // act
-            var result = _propertyRetriever.RetrieveFromCommandLine<string>("longName", "shortName");
+            var result = _propertyRetriever.RetrieveFromCommandLine<string>("longName", 's');
 
             // assert
             Assert.Empty(result);
@@ -181,21 +234,21 @@
         public void RetrieveFromCommandLine<T>(string property1, string property2, string property3, string property4, T value1, T value2, T value3, T value4)
         {
             // arrange
-            const string longPropertyName = "longPropertyName";
-            const string shortPropertyName = "shortPropertyName";
+            const string longName = "longPropertyName";
+            const char shortName = 's';
 
             var parameters = new[]
             {
                 "program.exe",
-                $"--{longPropertyName}", property1,
-                $"-{shortPropertyName}", property2,
-                $"-{shortPropertyName}", property3,
-                $"--{longPropertyName}", property4
+                $"--{longName}", property1,
+                $"-{shortName}", property2,
+                $"-{shortName}", property3,
+                $"--{longName}", property4
             };
             _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
 
             // act
-            var result = _propertyRetriever.RetrieveFromCommandLine<T>(longPropertyName, shortPropertyName);
+            var result = _propertyRetriever.RetrieveFromCommandLine<T>(longName, shortName);
 
             // assert
             Assert.Equal(new[] { value1, value2, value3, value4 }, result);
@@ -206,21 +259,21 @@
         public void RetrieveFromCommandLine_String(string property1, string property2, string property3, string property4, string value1, string value2, string value3, string value4)
         {
             // arrange
-            const string longPropertyName = "longPropertyName";
-            const string shortPropertyName = "shortPropertyName";
+            const string longName = "longPropertyName";
+            const char shortName = 's';
 
             var parameters = new[]
             {
                 "program.exe",
-                $"--{longPropertyName}", property1,
-                $"-{shortPropertyName}", property2,
-                $"-{shortPropertyName}", property3,
-                $"--{longPropertyName}", property4
+                $"--{longName}", property1,
+                $"-{shortName}", property2,
+                $"-{shortName}", property3,
+                $"--{longName}", property4
             };
             _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
 
             // act
-            var result = _propertyRetriever.RetrieveFromCommandLine(longPropertyName, shortPropertyName);
+            var result = _propertyRetriever.RetrieveFromCommandLine(longName, shortName);
 
             // assert
             Assert.Equal(new[] { value1, value2, value3, value4 }, result);
@@ -228,20 +281,56 @@
 
         [Theory]
         [InlineData("longProperty", null, "Error while converting value found for property with name longProperty.")]
-        [InlineData(null, "shortProperty", "Error while converting value found for property with name shortProperty.")]
-        [InlineData("longProperty", "shortProperty", "Error while converting value found for property with name longProperty/shortProperty.")]
-        public void RetriveFromCommandLine_Error(string longPropertyName, string shortPropertyName, string expectedErrorMessage)
+        [InlineData(null, 'l', "Error while converting value found for property with name l.")]
+        [InlineData("longProperty", 'l', "Error while converting value found for property with name longProperty/l.")]
+        public void RetriveFromCommandLine_Error(string longName, char? shortName, string expectedErrorMessage)
         {
             // arrange
-            var parameters = new[] { "program.exe", "--longProperty", "value", "-shortProperty", "anotherValue" };
+            var parameters = new[] { "program.exe", "--longProperty", "value", "-l", "anotherValue" };
             _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
 
             // act
-            var result = Record.Exception(() => _propertyRetriever.RetrieveFromCommandLine<int>(longPropertyName, shortPropertyName));
+            var result = Record.Exception(() => _propertyRetriever.RetrieveFromCommandLine<int>(longName, shortName));
 
             // assert
             Assert.IsType<InvalidOperationException>(result);
             Assert.Equal(expectedErrorMessage, result.Message);
+        }
+
+        [Theory]
+        [InlineData("Property")]
+        [InlineData("property")]
+        [InlineData("PROPERTY")]
+        [InlineData("propERTy")]
+        public void RetrieveFromCommandLine_LongNameCaseInsensitive(string longName)
+        {
+            // arrange
+            const string value = "value";
+            var parameters = new[] { "program.exe", "--property", value };
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine<string>(longName);
+
+            // assert
+            Assert.Equal(value, result.ToList()[0]);
+        }
+
+        [Theory]
+        [InlineData('c')]
+        [InlineData('C')]
+        public void RetrieveFromCommandLine_ShortNameCaseInsensitive(char shortName)
+        {
+            // arrange
+            const string value = "value";
+            var parameters = new[] { "program.exe", "-c", value };
+            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine<string>(shortName);
+
+            // assert
+            Assert.Equal(value, result.ToList()[0]);
         }
 
         #endregion

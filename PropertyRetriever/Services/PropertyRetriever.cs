@@ -52,51 +52,76 @@
         /// <summary>
         /// Check if a property is set via command line.
         /// </summary>
-        /// <param name="propertyLongName">Optional property long name (identified with -- as a command line parameter).</param>
-        /// <param name="propertyShortName">Optional property short name (identified with - as a command line parameter).</param>
+        /// <param name="shortName">Short name (identified with prefix - as a command line parameter).</param>
         /// <returns>True if at least one property is found, False otherwise.</returns>
-        /// <exception cref="ArgumentException">Thrown if <paramref name="propertyLongName"/> and <paramref name="propertyShortName"/> are not provided.</exception>
-        public bool CheckFromCommandLine(string propertyLongName = null, string propertyShortName = null)
+        public bool CheckFromCommandLine(char shortName) => CheckFromCommandLine(null, shortName);
+
+        /// <summary>
+        /// Check if a property is set via command line.
+        /// </summary>
+        /// <param name="longName">Optional property long name (identified with prefix -- as a command line parameter).</param>
+        /// <param name="shortName">Optional property short name (identified with prefix - as a command line parameter).</param>
+        /// <returns>True if at least one property is found, False otherwise.</returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are not provided.</exception>
+        public bool CheckFromCommandLine(string longName = null, char? shortName = null)
         {
-            if (propertyLongName == null && propertyShortName == null)
-                throw new ArgumentException("You need to supply a propertyLongName and/or a propertyShortName.");
+            if (longName == null && shortName == null)
+                throw new ArgumentException($"You need to supply a {nameof(longName)} and/or a {nameof(shortName)}.");
 
             var commandArray = _localEnvironment.GetCommandLineArgs().ToList();
-            var numberOfLongNames = string.IsNullOrEmpty(propertyLongName) ? 0 : commandArray.Count(x => x.Equals($"--{propertyLongName}"));
-            var numberOfShortNames = string.IsNullOrEmpty(propertyShortName) ? 0 : commandArray.Count(x => x.Equals($"-{propertyShortName}"));
+            var commandsWithShortPrefix = commandArray.Where(x => x.StartsWith("-"));
+            var commandsWithLongPrefix = commandArray.Where(x => x.StartsWith("--"));
+            var numberOfLongNames = string.IsNullOrEmpty(longName) ? 0 : commandsWithLongPrefix.Count(y => y.ToLower().Equals($"--{longName.ToLower()}"));
+            var numberOfShortNames = shortName == null ? 0 : commandsWithShortPrefix.Count(x => x.ToLower().Contains(char.ToLower(shortName.Value, CultureInfo.InvariantCulture)));
             return numberOfLongNames + numberOfShortNames > 0;
         }
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
         /// </summary>
-        /// <param name="propertyLongName">Optional property long name (identified with -- as a command line parameter).</param>
-        /// <param name="propertyShortName">Optional property short name (identified with - as a command line parameter).</param>
+        /// <param name="shortName">Optional property short name (identified with prefix - as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line.</returns>
-        /// <exception cref="ArgumentException">Thrown if <paramref name="propertyLongName"/> and <paramref name="propertyShortName"/> are not provided.</exception>
+        public IEnumerable<string> RetrieveFromCommandLine(char shortName) => RetrieveFromCommandLine<string>(null, shortName);
+
+        /// <summary>
+        /// Retrieve a list of values passed from the command line, converted to a specific type.
+        /// </summary>
+        /// <param name="longName">Optional property long name (identified with prefix -- as a command line parameter).</param>
+        /// <param name="shortName">Optional property short name (identified with prefix - as a command line parameter).</param>
+        /// <returns>List of properties retrieved from command line.</returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are not provided.</exception>
         /// <exception cref="InvalidOperationException">Thrown if the conversion for string can not be processed.</exception>
-        public IEnumerable<string> RetrieveFromCommandLine(string propertyLongName = null, string propertyShortName = null) => RetrieveFromCommandLine<string>(propertyLongName, propertyShortName);
+        public IEnumerable<string> RetrieveFromCommandLine(string longName = null, char? shortName = null) => RetrieveFromCommandLine<string>(longName, shortName);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
         /// </summary>
         /// <typeparam name="T">Desired type that all the retrieved properties will be converted.</typeparam>
-        /// <param name="propertyLongName">Optional property long name (identified with -- as a command line parameter).</param>
-        /// <param name="propertyShortName">Optional property short name (identified with - as a command line parameter).</param>
+        /// <param name="shortName">Optional property short name (identified with prefix - as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line converted to the specified type.</returns>
-        /// <exception cref="ArgumentException">Thrown if <paramref name="propertyLongName"/> and <paramref name="propertyShortName"/> are not provided.</exception>
         /// <exception cref="InvalidOperationException">Thrown if the conversion for <typeparamref name="T"/> can not be processed.</exception>
-        public IEnumerable<T> RetrieveFromCommandLine<T>(string propertyLongName = null, string propertyShortName = null)
+        public IEnumerable<T> RetrieveFromCommandLine<T>(char shortName) => RetrieveFromCommandLine<T>(null, shortName);
+
+        /// <summary>
+        /// Retrieve a list of values passed from the command line, converted to a specific type.
+        /// </summary>
+        /// <typeparam name="T">Desired type that all the retrieved properties will be converted.</typeparam>
+        /// <param name="longName">Optional property long name (identified with prefix -- as a command line parameter).</param>
+        /// <param name="shortName">Optional property short name (identified with prefix - as a command line parameter).</param>
+        /// <returns>List of properties retrieved from command line converted to the specified type.</returns>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are not provided.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the conversion for <typeparamref name="T"/> can not be processed.</exception>
+        public IEnumerable<T> RetrieveFromCommandLine<T>(string longName = null, char? shortName = null)
         {
-            if (propertyLongName == null && propertyShortName == null)
-                throw new ArgumentException("You need to supply a propertyLongName and/or a propertyShortName.");
+            if (longName == null && shortName == null)
+                throw new ArgumentException($"You need to supply a {nameof(longName)} and/or a {nameof(shortName)}.");
 
             var returnedList = new List<T>();
 
             var commandArray = _localEnvironment.GetCommandLineArgs().ToList();
             for (var i = 0; i < commandArray.Count - 1; i++)
             {
-                if (!string.IsNullOrEmpty(propertyLongName) && commandArray[i].Equals($"--{propertyLongName}") || !string.IsNullOrEmpty(propertyShortName) && commandArray[i].Equals($"-{propertyShortName}"))
+                if (!string.IsNullOrEmpty(longName) && commandArray[i].ToLowerInvariant().Equals($"--{longName.ToLowerInvariant()}") || shortName != null && commandArray[i].ToLowerInvariant().Equals($"-{char.ToLowerInvariant(shortName.Value)}"))
                 {
                     try
                     {
@@ -104,11 +129,11 @@
                     }
                     catch
                     {
-                        if (propertyLongName != null && propertyShortName == null)
-                            throw new InvalidOperationException($"Error while converting value found for property with name {propertyLongName}.");
-                        if (propertyLongName == null)
-                            throw  new InvalidOperationException($"Error while converting value found for property with name {propertyShortName}.");
-                        throw new InvalidOperationException($"Error while converting value found for property with name {propertyLongName}/{propertyShortName}.");
+                        if (longName != null && shortName == null)
+                            throw new InvalidOperationException($"Error while converting value found for property with name {longName}.");
+                        if (longName == null)
+                            throw  new InvalidOperationException($"Error while converting value found for property with name {shortName}.");
+                        throw new InvalidOperationException($"Error while converting value found for property with name {longName}/{shortName}.");
                     }
                 }
             }
