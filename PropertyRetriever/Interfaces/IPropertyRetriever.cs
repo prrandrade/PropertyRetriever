@@ -90,7 +90,7 @@
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line or <paramref name="fallbackValue"/> if nothing is found.</returns>
-        IEnumerable<string> RetrieveFromCommandLine(char shortName, IEnumerable<string> fallbackValue);
+        IEnumerable<string> RetrieveFromCommandLine(char shortName, params string[] fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line..
@@ -105,7 +105,7 @@
         /// <param name="longName">Property short name (identified with the '--' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line or <paramref name="fallbackValue"/> if nothing is found.</returns>
-        IEnumerable<string> RetrieveFromCommandLine(string longName, IEnumerable<string> fallbackValue);
+        IEnumerable<string> RetrieveFromCommandLine(string longName, params string[] fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -124,7 +124,7 @@
         /// <param name="shortName">Optional property short name (identified with - as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line.</returns>
-        IEnumerable<string> RetrieveFromCommandLine(string longName, char? shortName, IEnumerable<string> fallbackValue);
+        IEnumerable<string> RetrieveFromCommandLine(string longName, char? shortName, params string[] fallbackValue);
 
         #endregion
 
@@ -145,7 +145,7 @@
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line converted to the specified type or <paramref name="fallbackValue"/> if the values are not found or can not be converted.</returns>
-        IEnumerable<T> RetrieveFromCommandLine<T>(char shortName, IEnumerable<T> fallbackValue);
+        IEnumerable<T> RetrieveFromCommandLine<T>(char shortName, params T[] fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -162,7 +162,7 @@
         /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line converted to the specified type or <paramref name="fallbackValue"/> if the values are not found or can not be converted.</returns>
-        IEnumerable<T> RetrieveFromCommandLine<T>(string longName, IEnumerable<T> fallbackValue);
+        IEnumerable<T> RetrieveFromCommandLine<T>(string longName, params T[] fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -183,7 +183,7 @@
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line converted to the specified type or <paramref name="fallbackValue"/> if the values are not found or can not be converted.</returns>
-        IEnumerable<T> RetrieveFromCommandLine<T>(string longName, char? shortName, IEnumerable<T> fallbackValue);
+        IEnumerable<T> RetrieveFromCommandLine<T>(string longName, char? shortName, params T[] fallbackValue);
 
         #endregion
     }

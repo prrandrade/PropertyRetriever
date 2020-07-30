@@ -137,7 +137,7 @@
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line or <paramref name="fallbackValue"/> if nothing is found.</returns>
-        public IEnumerable<string> RetrieveFromCommandLine(char shortName, IEnumerable<string> fallbackValue) => RetrieveFromCommandLine(null, shortName, fallbackValue);
+        public IEnumerable<string> RetrieveFromCommandLine(char shortName, params string[] fallbackValue) => RetrieveFromCommandLine(null, shortName, fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line..
@@ -147,12 +147,12 @@
         public IEnumerable<string> RetrieveFromCommandLine(string longName) => RetrieveFromCommandLine<string>(longName, shortName: null);
 
         /// <summary>
-        /// Retrieve a list of values passed from the command line..
+        /// Retrieve a list of values passed from the command line.
         /// </summary>
         /// <param name="longName">Property short name (identified with the '--' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line or <paramref name="fallbackValue"/> if nothing is found.</returns>
-        public IEnumerable<string> RetrieveFromCommandLine(string longName, IEnumerable<string> fallbackValue) => RetrieveFromCommandLine(longName, char.MinValue, fallbackValue);
+        public IEnumerable<string> RetrieveFromCommandLine(string longName, params string[] fallbackValue) => RetrieveFromCommandLine(longName, null, fallbackValue: fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -170,7 +170,7 @@
         /// <param name="shortName">Optional property short name (identified with - as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line.</returns>
-        public IEnumerable<string> RetrieveFromCommandLine(string longName, char? shortName, IEnumerable<string> fallbackValue) => RetrieveFromCommandLine<string>(longName, shortName, fallbackValue);
+        public IEnumerable<string> RetrieveFromCommandLine(string longName, char? shortName, params string[] fallbackValue) => RetrieveFromCommandLine<string>(longName, shortName, fallbackValue);
 
         #endregion
 
@@ -191,7 +191,7 @@
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line converted to the specified type or <paramref name="fallbackValue"/> if the values are not found or can not be converted.</returns>
-        public IEnumerable<T> RetrieveFromCommandLine<T>(char shortName, IEnumerable<T> fallbackValue) => RetrieveFromCommandLine(null, shortName, fallbackValue);
+        public IEnumerable<T> RetrieveFromCommandLine<T>(char shortName, params T[] fallbackValue) => RetrieveFromCommandLine(null, shortName, fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -208,7 +208,7 @@
         /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line converted to the specified type or <paramref name="fallbackValue"/> if the values are not found or can not be converted.</returns>
-        public IEnumerable<T> RetrieveFromCommandLine<T>(string longName, IEnumerable<T> fallbackValue) => RetrieveFromCommandLine(longName, null, fallbackValue);
+        public IEnumerable<T> RetrieveFromCommandLine<T>(string longName, params T[] fallbackValue) => RetrieveFromCommandLine(longName, null, fallbackValue: fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -257,7 +257,7 @@
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line converted to the specified type or <paramref name="fallbackValue"/> if the values are not found or can not be converted.</returns>
-        public IEnumerable<T> RetrieveFromCommandLine<T>(string longName, char? shortName, IEnumerable<T> fallbackValue)
+        public IEnumerable<T> RetrieveFromCommandLine<T>(string longName, char? shortName, params T[] fallbackValue)
         {
             try
             {
