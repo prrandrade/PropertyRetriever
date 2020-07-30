@@ -394,7 +394,7 @@
         [Theory]
         [InlineData("prop", "program.exe --PROP 1 --ProP 2 --other a --PRop 3", new[] { 1, 2, 3 })]
         [InlineData("ProP", "program.exe --pROp test --PROP test2", new[] { "test", "test2" })]
-        [InlineData("ProP", "program.exe --otherProp test --Prop t", new [] { 't' })]
+        [InlineData("ProP", "program.exe --otherProp test --Prop t", new[] { 't' })]
         public void RetrieveFromCommandLine_Generic_LongName<T>(string longName, string commandLine, T[] expectedResult)
         {
             // arrange
@@ -444,7 +444,7 @@
         }
 
         [Theory]
-        [InlineData("prop", "program.exe --ProP 55 -C def", new[] {55})]
+        [InlineData("prop", "program.exe --ProP 55 -C def", new[] { 55 })]
         public void RetrieveFromCommandLine_Generic_LongName_ShortName_Null<T>(string longName, string commandLine, T[] expectedResult)
         {
             // arrange
@@ -460,7 +460,7 @@
         }
 
         [Theory]
-        [InlineData('C', "program.exe --ProP 55 -c yy", new[] {"yy"})]
+        [InlineData('C', "program.exe --ProP 55 -c yy", new[] { "yy" })]
         public void RetrieveFromCommandLine_Generic_LongName_Null_ShortName<T>(char shortName, string commandLine, T[] expectedResult)
         {
             // arrange
@@ -484,6 +484,57 @@
             // assert
             Assert.IsType<ArgumentException>(result);
             Assert.Equal("You need to supply a longName and/or a shortName.", result.Message);
+        }
+
+        [Fact]
+        public void RetrieveFromCommandLine_Generic_LongName_ShortName_NoParameterProvided_FallbackValue()
+        {
+            // arrange
+            var fallbackValue = new[] { 1, 2, 3 };
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine<int>(null, null, fallbackValue);
+
+            // assert
+            Assert.Equal(fallbackValue, result);
+        }
+
+        [Theory]
+        [InlineData("longName", null, "Error while converting value found for property with name longName.")]
+        [InlineData(null, 'c', "Error while converting value found for property with name c.")]
+        [InlineData("longName", 'c', "Error while converting value found for property with name longName/c.")]
+        public void RetrieveFromCommandLine_Generic_LongName_ShortName_ErrorInConversion(string longName, char? shortName, string errorMessage)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(new[] { "program.exe", "--longName", "u", "-c", "test" });
+
+            // act
+            var result = Record.Exception(() => _propertyRetriever.RetrieveFromCommandLine<int>(longName, shortName));
+
+            // assert
+            Assert.IsType<InvalidOperationException>(result);
+            Assert.Equal(errorMessage, result.Message);
+        }
+
+        [Theory]
+        [InlineData("longName", null)]
+        [InlineData(null, 'c')]
+        [InlineData("longName", 'c')]
+        public void RetrieveFromCommandLine_Generic_LongName_ShortName_ErrorInConversion_FallbackValue(string longName, char? shortName)
+        {
+            // arrange
+            var fallbackValue = new[] { 1, 2, 3 };
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(new[] { "program.exe", "--longName", "u", "-c", "test" });
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine<int>(longName, shortName, fallbackValue);
+
+            // assert
+            Assert.Equal(fallbackValue, result);
         }
 
         #endregion
