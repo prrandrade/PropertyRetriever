@@ -80,6 +80,16 @@ bool result6 = propertyRetriever.RetrieveFromEnvironment<bool>("variableName");
 
 The method `RetrieveFromEnvironment` can throw an `ArgumentException` if the environment variable name is invalid or a `InvalidOperationException` if the variable is not found or can not be converted.
 
+But if you need a fallback value (that will be returned instead of a `Exception`), you can pass it as a parameter:
+
+```csharp
+string result2 = propertyRetriever.RetrieveFromEnvironment<string>("variableName", "fallback");
+int result3 = propertyRetriever.RetrieveFromEnvironment<int>("variableName", 0);
+double result4 = propertyRetriever.RetrieveFromEnvironment<double>("variableName", 0.5);
+char result5 = propertyRetriever.RetrieveFromEnvironment<char>("variableName", 'a');
+bool result6 = propertyRetriever.RetrieveFromEnvironment<bool>("variableName", true);
+```
+
 
 
 # Checking parameters from Command Line
@@ -146,4 +156,16 @@ IEnumerable<bool> values2 = propertyRetriver.RetriveFromCommandLine<bool>('l');
 The method `RetriveFromCommandLine` can throw an `ArgumentException` if neither property name is passed (at least one property name must be called) or a `InvalidOperationException` if the conversion is not possible. If no value is retrieved, then then returned `IEnumerable` is empty.
 
 Take note that this method is **case insensitive**, so *--Property **1***  and *-PROPERTY **2*** represent the same property with two values. The call `propertyRetriver.RetriveFromCommandLine<int>("property");` will return a `IEnumerable<int>` with values **1** and **2**. This applies to short names as well, so, *-C* and *-c* refer to the same property. 
+
+Just like previously written, you can have a fallback value instead of a `Exception` or a empty `IEnumerable`:
+
+```csharp
+IEnumerable<string> values2 = propertyRetriver.RetriveFromCommandLine<string>("longName", new[]{ "fallbackValue" });
+IEnumerable<int> values2 = propertyRetriver.RetriveFromCommandLine<int>("longName", new[]{ 0,1,2 });
+IEnumerable<double> values2 = propertyRetriver.RetriveFromCommandLine<double>("longPropertyName", new[]{ 0.235, 1.234 });
+IEnumerable<char> values2 = propertyRetriver.RetriveFromCommandLine<char>('l', new[] { 'l', 'h'});
+IEnumerable<bool> values2 = propertyRetriver.RetriveFromCommandLine<bool>('l', new { false, false, false});
+```
+
+As you can see, you don't even need to pass a `IEnumerable` with a fixed number of fallback values.
 
