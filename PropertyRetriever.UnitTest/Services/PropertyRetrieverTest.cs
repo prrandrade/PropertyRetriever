@@ -183,7 +183,7 @@
         [InlineData("longname", false, "--firstName", "--secondName")]
         public void CheckFromCommandLine_LongName(string longName, bool expectedResult, params string[] parameter)
         {
-            // assert
+            // arrange
             var parameters = new List<string> { "program.exe" };
             parameters.AddRange(parameter);
 
@@ -204,7 +204,7 @@
         [InlineData("longName", 'l', false, "--ble", "-x")]
         public void CheckFromCommandLine(string longName, char shortName, bool expectedResult, params string[] parameter)
         {
-            // assert
+            // arrange
             var parameters = new List<string> { "program.exe" };
             parameters.AddRange(parameter);
 
@@ -334,194 +334,132 @@
 
         #endregion
 
-        #region
-
-        [Fact]
-        public void RetrieveFromCommandLine_NoPropertyNameProvided()
-        {
-            // arrange
-
-            // act
-            var result = Record.Exception(() => _propertyRetriever.RetrieveFromCommandLine<string>(null, shortName: null));
-
-            // assert
-            Assert.IsType<ArgumentException>(result);
-            Assert.Equal("You need to supply a longName and/or a shortName.", result.Message);
-        }
-
-        [Fact]
-        public void RetrieveFromCommandLine_NoPropertyFound()
-        {
-            // arrange
-            var parameters = new[] { "program.exe", "--longPropertyName", "value", "-shortPropertyName", "anotherValue" };
-            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
-
-            // act
-            var result = _propertyRetriever.RetrieveFromCommandLine<string>("longName", 's');
-
-            // assert
-            Assert.Empty(result);
-        }
+        #region RetrieveFromCommandLine - Generic
 
         [Theory]
-        [InlineData("firstValue", "secondValue", "thirdValue", "fourthValue", "firstValue", "secondValue", "thirdValue", "fourthValue")]
-        public void RetrieveFromCommandLine_String(string property1, string property2, string property3, string property4, string value1, string value2, string value3, string value4)
+        [InlineData('c', "program.exe -c r -d a -c a -c y", new[] { 'r', 'a', 'y' })]
+        [InlineData('c', "program.exe -C test -C 1234_5", new[] { "test", "1234_5" })]
+        [InlineData('C', "program.exe -C 123.4 -c 567.8", new[] { 123.4, 567.8 })]
+        [InlineData('c', "program.exe -c true -e false", new[] { true })]
+        public void RetrieveFromCommandLine_Generic_ShortName<T>(char shortName, string commandLine, T[] expectedResult)
         {
             // arrange
-            const string longName = "longPropertyName";
-            const char shortName = 's';
-
-            var parameters = new[]
-            {
-                "program.exe",
-                $"--{longName}", property1,
-                $"-{shortName}", property2,
-                $"-{shortName}", property3,
-                $"--{longName}", property4
-            };
-            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
-
-            // act
-            var result = _propertyRetriever.RetrieveFromCommandLine(longName, shortName);
-
-            // assert
-            Assert.Equal(new[] { value1, value2, value3, value4 }, result);
-        }
-
-        [Theory]
-        [InlineData("firstValue", "secondValue", "thirdValue", "fourthValue", "firstValue", "secondValue", "thirdValue", "fourthValue")]
-        [InlineData("a", "b", "c", "d", 'a', 'b', 'c', 'd')]
-        [InlineData("9", "8", "7", "6", 9, 8, 7, 6)]
-        [InlineData("0", "0", "-1", "-2", 0, 0, -1, -2)]
-        [InlineData("-100", "0", "56", "12345767", -100, 0, 56, 12345767)]
-        [InlineData("1.1", "2.23456", "0.902", "-1.8", 1.1, 2.23456, 0.902, -1.8)]
-        [InlineData("0.00001", "0.1234", "12351.7345", "-0.001", 0.00001, 0.1234, 12351.7345, -0.001)]
-        [InlineData("true", "TRUE", "True", "trUE", true, true, true, true)]
-        [InlineData("false", "FALSE", "False", "faLSE", false, false, false, false)]
-        public void RetrieveFromCommandLine<T>(string property1, string property2, string property3, string property4, T value1, T value2, T value3, T value4)
-        {
-            // arrange
-            const string longName = "longPropertyName";
-            const char shortName = 's';
-
-            var parameters = new[]
-            {
-                "program.exe",
-                $"--{longName}", property1,
-                $"-{shortName}", property2,
-                $"-{shortName}", property3,
-                $"--{longName}", property4
-            };
-            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
-
-            // act
-            var result = _propertyRetriever.RetrieveFromCommandLine<T>(longName, shortName);
-
-            // assert
-            Assert.Equal(new[] { value1, value2, value3, value4 }, result);
-        }
-
-        [Theory]
-        [InlineData("firstValue", "secondValue", "firstValue", "secondValue")]
-        public void RetrieveFromCommandLine_ShortName_String(string property1, string property2, string value1, string value2)
-        {
-            // arrange
-            const char shortName = 's';
-            var parameters = new[]
-            {
-                "program.exe",
-                $"-{shortName}", property1,
-                $"-{shortName}", property2
-            };
-            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
-
-            // act
-            var result = _propertyRetriever.RetrieveFromCommandLine(shortName);
-
-            // assert
-            Assert.Equal(new[] { value1, value2 }, result);
-        }
-
-        [Theory]
-        [InlineData("firstValue", "secondValue", "firstValue", "secondValue")]
-        [InlineData("a", "b", 'a', 'b')]
-        [InlineData("9", "8", 9, 8)]
-        [InlineData("-100", "0", -100, 0)]
-        [InlineData("0.00001", "0.1234", 0.00001, 0.1234)]
-        [InlineData("true", "TRUE", true, true)]
-        public void RetrieveFromCommandLine_ShortName<T>(string property1, string property2, T value1, T value2)
-        {
-            // arrange
-            const char shortName = 's';
-            var parameters = new[]
-            {
-                "program.exe",
-                $"-{shortName}", property1,
-                $"-{shortName}", property2
-            };
-            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
 
             // act
             var result = _propertyRetriever.RetrieveFromCommandLine<T>(shortName);
 
             // assert
-            Assert.Equal(new[] { value1, value2 }, result);
+            Assert.Equal(expectedResult, result.ToArray());
         }
 
         [Theory]
-        [InlineData("longProperty", null, "Error while converting value found for property with name longProperty.")]
-        [InlineData(null, 'l', "Error while converting value found for property with name l.")]
-        [InlineData("longProperty", 'l', "Error while converting value found for property with name longProperty/l.")]
-        public void RetriveFromCommandLine_Error(string longName, char? shortName, string expectedErrorMessage)
+        [InlineData('c', "program.exe -d 1 -e a -f a -g test", new[] { 1, 2, 3 })]
+        [InlineData('c', "program.exe -D 456 -d 1234", new[] { "test1", "test2" })]
+        public void RetrieveFromCommandLine_Generic_ShortName_FallbackValue<T>(char shortName, string commandLine, T[] fallback)
         {
             // arrange
-            var parameters = new[] { "program.exe", "--longProperty", "value", "-l", "anotherValue" };
-            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
 
             // act
-            var result = Record.Exception(() => _propertyRetriever.RetrieveFromCommandLine<int>(longName, shortName));
+            var result = _propertyRetriever.RetrieveFromCommandLine<T>(shortName, fallback);
 
             // assert
-            Assert.IsType<InvalidOperationException>(result);
-            Assert.Equal(expectedErrorMessage, result.Message);
+            Assert.Equal(fallback, result.ToArray());
         }
 
         [Theory]
-        [InlineData("Property")]
-        [InlineData("property")]
-        [InlineData("PROPERTY")]
-        [InlineData("propERTy")]
-        public void RetrieveFromCommandLine_LongNameCaseInsensitive(string longName)
+        [InlineData("prop", "program.exe --PROP 1 --ProP 2 --other a --PRop 3", new[] { 1, 2, 3 })]
+        [InlineData("ProP", "program.exe --pROp test --PROP test2", new[] { "test", "test2" })]
+        [InlineData("ProP", "program.exe --otherProp test --Prop t", new [] { 't' })]
+        public void RetrieveFromCommandLine_Generic_LongName<T>(string longName, string commandLine, T[] expectedResult)
         {
             // arrange
-            const string value = "value";
-            var parameters = new[] { "program.exe", "--property", value };
-            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
 
             // act
-            var result = _propertyRetriever.RetrieveFromCommandLine<string>(longName);
+            var result = _propertyRetriever.RetrieveFromCommandLine<T>(longName);
 
             // assert
-            Assert.Equal(value, result.ToList()[0]);
+            Assert.Equal(expectedResult, result.ToArray());
         }
 
         [Theory]
-        [InlineData('c')]
-        [InlineData('C')]
-        public void RetrieveFromCommandLine_ShortNameCaseInsensitive(char shortName)
+        [InlineData("prop", "program.exe --Prop true -o --PROP false", new[] { true, false })]
+        [InlineData("PROP", "program.exe --prOP 456 -d 1234", new[] { 456 })]
+        public void RetrieveFromCommandLine_Generic_LongName_FallbackValue<T>(string longName, string commandLine, T[] fallback)
         {
             // arrange
-            const string value = "value";
-            var parameters = new[] { "program.exe", "-c", value };
-            _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters);
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
 
             // act
-            var result = _propertyRetriever.RetrieveFromCommandLine(shortName);
+            var result = _propertyRetriever.RetrieveFromCommandLine<T>(longName, fallback);
 
             // assert
-            Assert.Equal(value, result.ToList()[0]);
+            Assert.Equal(fallback, result.ToArray());
         }
+
+        [Theory]
+        [InlineData("prop", 'c', "program.exe --PROP 123 -c 456", new[] { 123, 456 })]
+        [InlineData("prop", 'c', "program.exe --ProP abc -C def", new[] { "abc", "def" })]
+        public void RetrieveFromCommandLine_Generic_LongName_ShortName<T>(string longName, char? shortName, string commandLine, T[] expectedResult)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine<T>(longName, shortName);
+
+            // assert
+            Assert.Equal(expectedResult, result.ToArray());
+        }
+
+        [Theory]
+        [InlineData("prop", "program.exe --ProP 55 -C def", new[] {55})]
+        public void RetrieveFromCommandLine_Generic_LongName_ShortName_Null<T>(string longName, string commandLine, T[] expectedResult)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine<T>(longName, shortName: null);
+
+            // assert
+            Assert.Equal(expectedResult, result.ToArray());
+        }
+
+        [Theory]
+        [InlineData('C', "program.exe --ProP 55 -c yy", new[] {"yy"})]
+        public void RetrieveFromCommandLine_Generic_LongName_Null_ShortName<T>(char shortName, string commandLine, T[] expectedResult)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine<T>(null, shortName);
+
+            // assert
+            Assert.Equal(expectedResult, result.ToArray());
+        }
+
 
         #endregion
+
+
+
     }
 }
