@@ -321,6 +321,25 @@
             Assert.Equal(expectedResult, result.ToArray());
         }
 
+        [Theory]
+        [InlineData("otherprop", 'p', "program.exe --PROP 123 -c 456", new[] { "123", "456" })]
+        [InlineData("otherProp", 'p', "program.exe --ProP abc -C def", new[] { "abc", "def" })]
+        [InlineData("otherProp", null, "program.exe --ProP 55 -C def", new[] { "55" })]
+        [InlineData(null, 'C', "program.exe --ProP 55 -g yy", new[] { "yy" })]
+        public void RetrieveFromCommandLine_String_LongName_ShortName_FallbackValue(string longName, char? shortName, string commandLine, string[] fallback)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine(longName, shortName, fallback);
+
+            // assert
+            Assert.Equal(fallback, result.ToArray());
+        }
+
         [Fact]
         public void RetrieveFromCommandLine_String_LongName_ShortName_NoParameterProvided()
         {
@@ -456,10 +475,17 @@
             Assert.Equal(expectedResult, result.ToArray());
         }
 
+        [Fact]
+        public void RetrieveFromCommandLine_Generic_LongName_ShortName_NoParameterProvided()
+        {
+            // act
+            var result = Record.Exception(() => _propertyRetriever.RetrieveFromCommandLine<int>(null, shortName: null));
+
+            // assert
+            Assert.IsType<ArgumentException>(result);
+            Assert.Equal("You need to supply a longName and/or a shortName.", result.Message);
+        }
 
         #endregion
-
-
-
     }
 }
