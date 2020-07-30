@@ -160,8 +160,7 @@
         /// <param name="longName">Optional property long name (identified with -- as a command line parameter).</param>
         /// <param name="shortName">Optional property short name (identified with - as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line.</returns>
-        /// <exception cref="System.ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are null.</exception>
-        /// <exception cref="System.InvalidOperationException">Thrown if the conversion for string can not be processed.</exception>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are null.</exception>
         public IEnumerable<string> RetrieveFromCommandLine(string longName, char? shortName) => RetrieveFromCommandLine<string>(longName, shortName);
 
         /// <summary>
@@ -218,8 +217,8 @@
         /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line converted to the specified type.</returns>
-        /// <exception cref="System.ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are not provided.</exception>
-        /// <exception cref="System.InvalidOperationException">Thrown if the conversion for <typeparamref name="T"/> can not be processed.</exception>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are not provided.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the conversion for <typeparamref name="T"/> can not be processed.</exception>
         public IEnumerable<T> RetrieveFromCommandLine<T>(string longName, char? shortName)
         {
             if (longName == null && shortName == null)

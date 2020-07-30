@@ -163,10 +163,9 @@
         [InlineData('b', false, "-a", "-u")]
         public void CheckFromCommandLine_ShortName(char shortName, bool expectedResult, params string[] parameter)
         {
-            // assert
-            var parameters = new List<string> {"program.exe"};
+            // arrange
+            var parameters = new List<string> { "program.exe" };
             parameters.AddRange(parameter);
-            
             _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters.ToArray);
 
             // act
@@ -185,9 +184,9 @@
         public void CheckFromCommandLine_LongName(string longName, bool expectedResult, params string[] parameter)
         {
             // assert
-            var parameters = new List<string> {"program.exe"};
+            var parameters = new List<string> { "program.exe" };
             parameters.AddRange(parameter);
-            
+
             _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters.ToArray);
 
             // act
@@ -206,9 +205,9 @@
         public void CheckFromCommandLine(string longName, char shortName, bool expectedResult, params string[] parameter)
         {
             // assert
-            var parameters = new List<string> {"program.exe"};
+            var parameters = new List<string> { "program.exe" };
             parameters.AddRange(parameter);
-            
+
             _localEnvironmentMock.Setup(x => x.GetCommandLineArgs()).Returns(parameters.ToArray);
 
             // act
@@ -231,10 +230,111 @@
 
         #endregion
 
-        #region RetrieveFromCommandLine
+        #region RetrieveFromCommandLine - String
 
+        [Theory]
+        [InlineData('c', "program.exe -c 1 -d a -c a -c test", new[] { "1", "a", "test" })]
+        [InlineData('c', "program.exe -C test -c 1234_5", new[] { "test", "1234_5" })]
+        [InlineData('c', "program.exe -d xyz -e 23", new string[] { })]
+        public void RetrieveFromCommandLine_String_ShortName(char shortName, string commandLine, string[] expectedResult)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
 
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine(shortName);
 
+            // assert
+            Assert.Equal(expectedResult, result.ToArray());
+        }
+
+        [Theory]
+        [InlineData('c', "program.exe -d 1 -e a -f a -g test", new[] { "1", "2", "3" })]
+        [InlineData('c', "program.exe -D 456 -d 1234", new[] { "test1", "test2" })]
+        public void RetrieveFromCommandLine_String_ShortName_FallbackValue(char shortName, string commandLine, string[] fallback)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine(shortName, fallback);
+
+            // assert
+            Assert.Equal(fallback, result.ToArray());
+        }
+
+        [Theory]
+        [InlineData("prop", "program.exe --PROP 1 --ProP a --other a --PRop test", new[] { "1", "a", "test" })]
+        [InlineData("ProP", "program.exe --pROp test --PROP 1234_5", new[] { "test", "1234_5" })]
+        [InlineData("ProP", "program.exe --otherProp test --otherProp 1234_5", new string[] { })]
+        public void RetrieveFromCommandLine_String_LongName(string longName, string commandLine, string[] expectedResult)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine(longName);
+
+            // assert
+            Assert.Equal(expectedResult, result.ToArray());
+        }
+
+        [Theory]
+        [InlineData("prop", "program.exe --OTHERPROP a --OtherProp c", new[] { "1", "2", "3" })]
+        [InlineData("PRop", "program.exe --prop1 456 -prop2 1234", new[] { "test1", "test2" })]
+        public void RetrieveFromCommandLine_String_LongName_FallbackValue(string shortName, string commandLine, string[] fallback)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine(shortName, fallback);
+
+            // assert
+            Assert.Equal(fallback, result.ToArray());
+        }
+
+        [Theory]
+        [InlineData("prop", 'c', "program.exe --PROP 123 -c 456", new[] { "123", "456" })]
+        [InlineData("prop", 'c', "program.exe --ProP abc -C def", new[] { "abc", "def" })]
+        [InlineData("prop", null, "program.exe --ProP 55 -C def", new[] { "55" })]
+        [InlineData(null, 'C', "program.exe --ProP 55 -c yy", new[] { "yy" })]
+        public void RetrieveFromCommandLine_String_LongName_ShortName(string longName, char? shortName, string commandLine, string[] expectedResult)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLine(longName, shortName);
+
+            // assert
+            Assert.Equal(expectedResult, result.ToArray());
+        }
+
+        [Fact]
+        public void RetrieveFromCommandLine_String_LongName_ShortName_NoParameterProvided()
+        {
+            // act
+            var result = Record.Exception(() => _propertyRetriever.RetrieveFromCommandLine(null, shortName: null));
+
+            // assert
+            Assert.IsType<ArgumentException>(result);
+            Assert.Equal("You need to supply a longName and/or a shortName.", result.Message);
+        }
+
+        #endregion
+
+        #region
 
         [Fact]
         public void RetrieveFromCommandLine_NoPropertyNameProvided()
