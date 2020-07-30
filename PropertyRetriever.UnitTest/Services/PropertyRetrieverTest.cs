@@ -4,7 +4,6 @@
     using System.Collections.Generic;
     using System.Linq;
     using Interfaces;
-    using Microsoft.VisualBasic.CompilerServices;
     using Moq;
     using PropertyRetriever.Services;
     using Xunit;
@@ -233,6 +232,9 @@
         #endregion
 
         #region RetrieveFromCommandLine
+
+
+
 
         [Fact]
         public void RetrieveFromCommandLine_NoPropertyNameProvided()
