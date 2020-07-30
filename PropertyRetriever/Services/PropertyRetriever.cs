@@ -15,14 +15,24 @@
             _localEnvironment = localEnvironment;
         }
 
+        #region Retrieve only from Environment
+
         /// <summary>
-        /// Retrieve a value from the environment variable set and convert to a specific type.
+        /// Retrieve a value from the environment variable set.
         /// </summary>
         /// <param name="variableName">Environment variable name.</param>
         /// <returns>Environment variable value.</returns>
         /// <exception cref="ArgumentException">Thrown when the environment variable name is not valid.</exception>
-        /// <exception cref="InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the variable is not found.</exception>
         public string RetrieveFromEnvironment(string variableName) => RetrieveFromEnvironment<string>(variableName);
+
+        /// <summary>
+        /// Retrieve a value from the environment variable set and convert to a specific type.
+        /// </summary>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
+        /// <returns>Environment variable value or <paramref name="fallbackValue"/> if the environment variable is not found.</returns>
+        public string RetrieveFromEnvironment(string variableName, string fallbackValue) => RetrieveFromEnvironment<string>(variableName, fallbackValue);
 
         /// <summary>
         /// Retrieve a value from the environment variable set and convert to a specific type.
@@ -48,6 +58,31 @@
 
             return finalValue;
         }
+
+        /// <summary>
+        /// Retrieve a value from the environment variable set and convert to a specific type.
+        /// </summary>
+        /// <typeparam name="T">Desired type that the environment variable value will be converted.</typeparam>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
+        /// <returns>
+        /// Environment variable value converted to <typeparamref name="T"/>
+        /// or <paramref name="fallbackValue"/> if the environment variable is not found
+        /// or the conversion for <typeparamref name="T"/> can not be done.
+        /// </returns>
+        public T RetrieveFromEnvironment<T>(string variableName, T fallbackValue)
+        {
+            try
+            {
+                return RetrieveFromEnvironment<T>(variableName);
+            }
+            catch
+            {
+                return fallbackValue;
+            }
+        }
+
+        #endregion
 
         /// <summary>
         /// Check if a property is set via command line.

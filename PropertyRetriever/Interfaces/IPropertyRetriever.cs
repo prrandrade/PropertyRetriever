@@ -4,6 +4,8 @@
 
     public interface IPropertyRetriever
     {
+        #region Retrieve only from Environment
+
         /// <summary>
         /// Retrieve a value from the environment variable set and convert to a specific type.
         /// </summary>
@@ -12,6 +14,14 @@
         /// <exception cref="System.ArgumentException">Thrown when the environment variable name is not valid.</exception>
         /// <exception cref="System.InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
         string RetrieveFromEnvironment(string variableName);
+        
+        /// <summary>
+        /// Retrieve a value from the environment variable set and convert to a specific type.
+        /// </summary>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
+        /// <returns>Environment variable value or <paramref name="fallbackValue"/> if the environment variable is not found.</returns>
+        string RetrieveFromEnvironment(string variableName, string fallbackValue);
 
         /// <summary>
         /// Retrieve a value from the environment variable set and convert to a specific type.
@@ -22,6 +32,12 @@
         /// <exception cref="System.ArgumentException">Thrown when the environment variable name is not valid.</exception>
         /// <exception cref="System.InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
         T RetrieveFromEnvironment<T>(string variableName);
+
+        T RetrieveFromEnvironment<T>(string variableName, T fallbackValue);
+
+        #endregion
+
+        #region Check from Command Line
 
         /// <summary>
         /// Check if a property is set via command line.
@@ -38,6 +54,10 @@
         /// <returns>True if at least one property is found, False otherwise.</returns>
         /// <exception cref="System.ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are not provided.</exception>
         bool CheckFromCommandLine(string longName = null, char? shortName = null);
+
+        #endregion
+
+        #region Retrieve only from Command Line
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -75,5 +95,9 @@
         /// <exception cref="System.ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are not provided.</exception>
         /// <exception cref="System.InvalidOperationException">Thrown if the conversion for <typeparamref name="T"/> can not be processed.</exception>
         IEnumerable<T> RetrieveFromCommandLine<T>(string longName = null, char? shortName = null);
+
+        #endregion
+
+        
     }
 }

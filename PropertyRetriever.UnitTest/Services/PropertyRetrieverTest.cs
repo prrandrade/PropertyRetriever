@@ -3,6 +3,7 @@
     using System;
     using System.Linq;
     using Interfaces;
+    using Microsoft.VisualBasic.CompilerServices;
     using Moq;
     using PropertyRetriever.Services;
     using Xunit;
@@ -34,28 +35,36 @@
             var result = _propertyRetriever.RetrieveFromEnvironment(variableName);
 
             // assert
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(variableName), Times.Once);
             Assert.Equal(variableValue, result);
+        }
+
+        [Fact]
+        public void RetrieveFromEnvironment_String_FallbackValue()
+        {
+            // arrange
+            const string variableName = "variableName";
+            const string variableFallbackValue = "variableFallbackValue";
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Throws<Exception>();
+
+            // act
+            var result = _propertyRetriever.RetrieveFromEnvironment(variableName, variableFallbackValue);
+
+            // assert
+            Assert.Equal(variableFallbackValue, result);
         }
 
         [Theory]
         [InlineData("test", "test")]
         [InlineData("a", 'a')]
-        [InlineData("1", 1)]
-        [InlineData("2", 2)]
         [InlineData("0", 0)]
         [InlineData("-1", -1)]
-        [InlineData("-2", -2)]
-        [InlineData("1.1", 1.1)]
         [InlineData("2.23456", 2.23456)]
-        [InlineData("0.902", 0.902)]
-        [InlineData("-1.8", -1.8)]
         [InlineData("-2.0009", -2.0009)]
         [InlineData("true", true)]
-        [InlineData("TRUE", true)]
-        [InlineData("True", true)]
         [InlineData("TrUe", true)]
-        [InlineData("false", false)]
-        [InlineData("FALSE", false)]
         [InlineData("False", false)]
         [InlineData("FaLsE", false)]
         public void RetrieveFromEnvironment<T>(string variableValue, T expectedVariableValue)
@@ -71,6 +80,48 @@
 
             // assert
             Assert.Equal(expectedVariableValue, result);
+        }
+
+        [Theory]
+        [InlineData("test")]
+        [InlineData('a')]
+        [InlineData(-1)]
+        [InlineData(2.23456)]
+        [InlineData(false)]
+        public void RetrieveFromEnvironment_FallbackValue_NotFound<T>(T fallbackValue)
+        {
+            // arrange
+            const string variableName = "variableName";
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Throws<Exception>();
+
+            // act
+            var result = _propertyRetriever.RetrieveFromEnvironment<T>(variableName, fallbackValue);
+
+            // assert
+            _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(variableName), Times.Once);
+            Assert.Equal(fallbackValue, result);
+        }
+
+        [Theory]
+        [InlineData("asd", 'a')]
+        [InlineData("a", -1)]
+        [InlineData("a", 2.23456)]
+        [InlineData("a", false)]
+        public void RetrieveFromEnvironment_FallbackValue_NotConverted<T>(string variableValue, T fallbackValue)
+        {
+            // arrange
+            const string variableName = "variableName";
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Returns(variableValue);
+
+            // act
+            var result = _propertyRetriever.RetrieveFromEnvironment(variableName, fallbackValue);
+
+            // assert
+            Assert.Equal(fallbackValue, result);
         }
 
         [Fact]
