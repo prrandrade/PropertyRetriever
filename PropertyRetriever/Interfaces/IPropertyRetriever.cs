@@ -4,7 +4,7 @@
 
     public interface IPropertyRetriever
     {
-        #region Retrieve only from Environment - String Values
+        #region Retrieve only from Environment - String
 
         /// <summary>
         /// Retrieve a value from the environment variable set and convert to a specific type.
@@ -14,7 +14,7 @@
         /// <exception cref="System.ArgumentException">Thrown when the environment variable name is not valid.</exception>
         /// <exception cref="System.InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
         string RetrieveFromEnvironment(string variableName);
-        
+
         /// <summary>
         /// Retrieve a value from the environment variable set and convert to a specific type.
         /// </summary>
@@ -25,7 +25,7 @@
 
         #endregion
 
-        #region Retrieve only from Environment - Generic values
+        #region Retrieve only from Environment - Generic
 
         /// <summary>
         /// Retrieve a value from the environment variable set and convert to a specific type.
@@ -75,7 +75,7 @@
 
         #endregion
 
-        #region Retrieve only from Command Line - String Values
+        #region Retrieve only from Command Line - String
 
         /// <summary>
         /// Retrieve a list of values passed from the command line..
@@ -128,7 +128,7 @@
 
         #endregion
 
-        #region Retrieve only from Command Line - Generic Values
+        #region Retrieve only from Command Line - Generic
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -174,7 +174,7 @@
         /// <exception cref="System.ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are not provided.</exception>
         /// <exception cref="System.InvalidOperationException">Thrown if the conversion for <typeparamref name="T"/> can not be processed.</exception>
         IEnumerable<T> RetrieveFromCommandLine<T>(string longName, char? shortName);
-        
+
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
         /// </summary>
@@ -186,5 +186,38 @@
         IEnumerable<T> RetrieveFromCommandLine<T>(string longName, char? shortName, params T[] fallbackValue);
 
         #endregion
+
+        #region Retrieve from Command Line then from Environment - String
+
+        public string RetrieveFromCommandLineOrEnvironment(string longName, string variableName);
+
+        public string RetrieveFromCommandLineOrEnvironment(string longName, string variableName, string fallbackValue);
+
+        public string RetrieveFromCommandLineOrEnvironment(char shortValue, string variableName);
+
+        public string RetrieveFromCommandLineOrEnvironment(char shortValue, string variableName, string fallbackValue);
+
+        public string RetrieveFromCommandLineOrEnvironment(string longName, char? shortName, string variableName);
+
+        public string RetrieveFromCommandLineOrEnvironment(string longName, char? shortName, string variableName, string fallbackValue);
+
+        #endregion
+
+        #region Retrieve from Command Line then from Environment - Generic
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(string longName, string variableName);
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(string longName, string variableName, T fallbackValue);
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(char shortValue, string variableName);
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(char shortValue, string variableName, T fallbackValue);
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(string longName, char? shortName, string variableName);
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(string longName, char? shortName, string variableName, T fallbackValue);
+
+        #endregion
+
     }
 }

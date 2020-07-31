@@ -15,7 +15,7 @@
             _localEnvironment = localEnvironment;
         }
 
-        #region Retrieve only from Environment - String values
+        #region Retrieve only from Environment - String
 
         /// <summary>
         /// Retrieve a value from the environment variable set and convert to a specific type.
@@ -24,7 +24,8 @@
         /// <returns>Environment variable value.</returns>
         /// <exception cref="System.ArgumentException">Thrown when the environment variable name is not valid.</exception>
         /// <exception cref="System.InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
-        public string RetrieveFromEnvironment(string variableName) => RetrieveFromEnvironment<string>(variableName);
+        public string RetrieveFromEnvironment(string variableName) 
+            => RetrieveFromEnvironment<string>(variableName);
 
         /// <summary>
         /// Retrieve a value from the environment variable set and convert to a specific type.
@@ -32,11 +33,12 @@
         /// <param name="variableName">Environment variable name.</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>Environment variable value or <paramref name="fallbackValue"/> if the environment variable is not found.</returns>
-        public string RetrieveFromEnvironment(string variableName, string fallbackValue) => RetrieveFromEnvironment<string>(variableName, fallbackValue);
+        public string RetrieveFromEnvironment(string variableName, string fallbackValue) 
+            => RetrieveFromEnvironment<string>(variableName, fallbackValue);
 
         #endregion
 
-        #region Retrieve only from Environment - Generic values
+        #region Retrieve only from Environment - Generic
 
         /// <summary>
         /// Retrieve a value from the environment variable set and convert to a specific type.
@@ -91,14 +93,16 @@
         /// </summary>
         /// <param name="shortName">Short name (identified with the '-' prefix as a command line parameter).</param>
         /// <returns>True if at least one property is found, False otherwise.</returns>
-        public bool CheckFromCommandLine(char shortName) => CheckFromCommandLine(null, shortName);
+        public bool CheckFromCommandLine(char shortName) 
+            => CheckFromCommandLine(null, shortName);
 
         /// <summary>
         /// Check if a property is set via command line.
         /// </summary>
         /// <param name="longName">Long name (identified with the '--' prefix as a command line parameter).</param>
         /// <returns>True if at least one property is found, False otherwise.</returns>
-        public bool CheckFromCommandLine(string longName) => CheckFromCommandLine(longName, null);
+        public bool CheckFromCommandLine(string longName) 
+            => CheckFromCommandLine(longName, null);
 
         /// <summary>
         /// Check if a property is set via command line.
@@ -122,14 +126,15 @@
 
         #endregion
 
-        #region Retrieve only from Command Line - String values
+        #region Retrieve only from Command Line - String
 
         /// <summary>
         /// Retrieve a list of values passed from the command line..
         /// </summary>
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line.</returns>
-        public IEnumerable<string> RetrieveFromCommandLine(char shortName) => RetrieveFromCommandLine<string>(null, shortName);
+        public IEnumerable<string> RetrieveFromCommandLine(char shortName) 
+            => RetrieveFromCommandLine<string>(null, shortName);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line..
@@ -137,14 +142,16 @@
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line or <paramref name="fallbackValue"/> if nothing is found.</returns>
-        public IEnumerable<string> RetrieveFromCommandLine(char shortName, params string[] fallbackValue) => RetrieveFromCommandLine(null, shortName, fallbackValue);
+        public IEnumerable<string> RetrieveFromCommandLine(char shortName, params string[] fallbackValue) 
+            => RetrieveFromCommandLine(null, shortName, fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line..
         /// </summary>
         /// <param name="longName">Property short name (identified with the '--' prefix as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line.</returns>
-        public IEnumerable<string> RetrieveFromCommandLine(string longName) => RetrieveFromCommandLine<string>(longName, shortName: null);
+        public IEnumerable<string> RetrieveFromCommandLine(string longName) 
+            => RetrieveFromCommandLine<string>(longName, shortName: null);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line.
@@ -152,7 +159,8 @@
         /// <param name="longName">Property short name (identified with the '--' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line or <paramref name="fallbackValue"/> if nothing is found.</returns>
-        public IEnumerable<string> RetrieveFromCommandLine(string longName, params string[] fallbackValue) => RetrieveFromCommandLine(longName, null, fallbackValue: fallbackValue);
+        public IEnumerable<string> RetrieveFromCommandLine(string longName, params string[] fallbackValue) 
+            => RetrieveFromCommandLine(longName, null, fallbackValue: fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -161,7 +169,8 @@
         /// <param name="shortName">Optional property short name (identified with - as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line.</returns>
         /// <exception cref="ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are null.</exception>
-        public IEnumerable<string> RetrieveFromCommandLine(string longName, char? shortName) => RetrieveFromCommandLine<string>(longName, shortName);
+        public IEnumerable<string> RetrieveFromCommandLine(string longName, char? shortName) 
+            => RetrieveFromCommandLine<string>(longName, shortName);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -170,11 +179,12 @@
         /// <param name="shortName">Optional property short name (identified with - as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line.</returns>
-        public IEnumerable<string> RetrieveFromCommandLine(string longName, char? shortName, params string[] fallbackValue) => RetrieveFromCommandLine<string>(longName, shortName, fallbackValue);
+        public IEnumerable<string> RetrieveFromCommandLine(string longName, char? shortName, params string[] fallbackValue) 
+            => RetrieveFromCommandLine<string>(longName, shortName, fallbackValue);
 
         #endregion
 
-        #region Retrieve only form Command Line - Generic Values
+        #region Retrieve only form Command Line - Generic
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -182,7 +192,8 @@
         /// <typeparam name="T">Desired type that all the retrieved properties will be converted.</typeparam>
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line converted to the specified type.</returns>
-        public IEnumerable<T> RetrieveFromCommandLine<T>(char shortName) => RetrieveFromCommandLine<T>(null, shortName);
+        public IEnumerable<T> RetrieveFromCommandLine<T>(char shortName) 
+            => RetrieveFromCommandLine<T>(null, shortName);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -191,7 +202,8 @@
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line converted to the specified type or <paramref name="fallbackValue"/> if the values are not found or can not be converted.</returns>
-        public IEnumerable<T> RetrieveFromCommandLine<T>(char shortName, params T[] fallbackValue) => RetrieveFromCommandLine(null, shortName, fallbackValue);
+        public IEnumerable<T> RetrieveFromCommandLine<T>(char shortName, params T[] fallbackValue) 
+            => RetrieveFromCommandLine(null, shortName, fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -199,7 +211,8 @@
         /// <typeparam name="T">Desired type that all the retrieved properties will be converted.</typeparam>
         /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line converted to the specified type.</returns>
-        public IEnumerable<T> RetrieveFromCommandLine<T>(string longName) => RetrieveFromCommandLine<T>(longName, shortName: null);
+        public IEnumerable<T> RetrieveFromCommandLine<T>(string longName) 
+            => RetrieveFromCommandLine<T>(longName, shortName: null);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -208,7 +221,8 @@
         /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
         /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
         /// <returns>List of properties retrieved from command line converted to the specified type or <paramref name="fallbackValue"/> if the values are not found or can not be converted.</returns>
-        public IEnumerable<T> RetrieveFromCommandLine<T>(string longName, params T[] fallbackValue) => RetrieveFromCommandLine(longName, null, fallbackValue: fallbackValue);
+        public IEnumerable<T> RetrieveFromCommandLine<T>(string longName, params T[] fallbackValue) 
+            => RetrieveFromCommandLine(longName, null, fallbackValue: fallbackValue);
 
         /// <summary>
         /// Retrieve a list of values passed from the command line, converted to a specific type.
@@ -262,13 +276,79 @@
             try
             {
                 var values = RetrieveFromCommandLine<T>(longName, shortName);
-                return values.Any() 
-                    ? values 
+                return values.Any()
+                    ? values
                     : fallbackValue;
             }
             catch
             {
                 return fallbackValue;
+            }
+        }
+
+        #endregion
+
+        #region Retrieve from Command Line then from Environment - String
+
+        public string RetrieveFromCommandLineOrEnvironment(string longName, string variableName)
+            => RetrieveFromCommandLineOrEnvironment<string>(longName, shortName: null, variableName);
+
+        public string RetrieveFromCommandLineOrEnvironment(string longName, string variableName, string fallbackValue)
+            => RetrieveFromCommandLineOrEnvironment<string>(longName, null, variableName, fallbackValue);
+
+        public string RetrieveFromCommandLineOrEnvironment(char shortValue, string variableName)
+            => RetrieveFromCommandLineOrEnvironment<string>(null, shortValue, variableName);
+
+        public string RetrieveFromCommandLineOrEnvironment(char shortValue, string variableName, string fallbackValue)
+            => RetrieveFromCommandLineOrEnvironment<string>(null, shortValue, variableName, fallbackValue);
+
+        public string RetrieveFromCommandLineOrEnvironment(string longName, char? shortName, string variableName)
+            => RetrieveFromCommandLineOrEnvironment<string>(longName, shortName, variableName);
+
+        public string RetrieveFromCommandLineOrEnvironment(string longName, char? shortName, string variableName, string fallbackValue) 
+            => RetrieveFromCommandLineOrEnvironment<string>(longName, shortName, variableName, fallbackValue);
+
+        #endregion
+
+        #region Retrieve from Command Line then from Environment - Generic
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(string longName, string variableName)
+            => RetrieveFromCommandLineOrEnvironment<T>(longName, null, variableName);
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(string longName, string variableName, T fallbackValue)
+            => RetrieveFromCommandLineOrEnvironment<T>(longName, null, variableName, fallbackValue);
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(char shortValue, string variableName)
+            => RetrieveFromCommandLineOrEnvironment<T>(null, shortValue, variableName);
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(char shortValue, string variableName, T fallbackValue)
+            => RetrieveFromCommandLineOrEnvironment<T>(null, shortValue, variableName, fallbackValue);
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(string longName, char? shortName, string variableName)
+        {
+            try
+            {
+                var commandValues = RetrieveFromCommandLine<T>(longName, shortName).ToList();
+                if (commandValues.Any()) return commandValues[0];
+                throw new Exception();
+            }
+            catch
+            {
+                return RetrieveFromEnvironment<T>(variableName);
+            }
+        }
+
+        public T RetrieveFromCommandLineOrEnvironment<T>(string longName, char? shortName, string variableName, T fallbackValue)
+        {
+            try
+            {
+                var commandValues = RetrieveFromCommandLine<T>(longName, shortName).ToList();
+                if (commandValues.Any()) return commandValues[0];
+                throw new Exception();
+            }
+            catch
+            {
+                return RetrieveFromEnvironment<T>(variableName, fallbackValue);
             }
         }
 
