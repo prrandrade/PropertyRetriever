@@ -8,6 +8,7 @@ PropertyRetriever
 - [Retrieving variables from the Environment](#retrieving-variables-from-the-environment)
 - [Checking parameters from Command Line](#checking-parameters-from-command-line)
 - [Retrieving parameters from Command Line](#retrieving-parameters-from-command-line)
+- [Retrieving parameters from Command Line or Environment](#retrieving-parameters-from-command-line-or-environment)
 
 
 
@@ -120,9 +121,7 @@ The method `CheckFromCommandLine` can be used to check if the property *a* is se
 bool propertyIsSet4 = propertyRetriever.CheckFromCommandLine('a');
 ```
 
-The method `CheckForCommandLine` can throw an `ArgumentException` if neither property name is passed (at least one property name must be called).
-
-Take note that this method is **case insensive**, so `-s` and `-S` represent the **same** property. The same values for *-longName* and *-LONGNAME*.
+The method `CheckForCommandLine` can throw an `ArgumentException` if neither property name is passed (at least one property name must be called). Take note that this method is **case insensive**, so `-s` and `-S` represent the **same** property. The same values for *-longName* and *-LONGNAME*.
 
 
 
@@ -168,4 +167,30 @@ IEnumerable<bool> values2 = propertyRetriver.RetriveFromCommandLine<bool>('l', n
 ```
 
 As you can see, you don't even need to pass a `IEnumerable` with a fixed number of fallback values.
+
+
+
+# Retrieving parameters from Command Line and Environment
+
+But imagine the following scenario: you have a environment variable with a value, but for a specific run, you need to override this value with a command  parameter. Now you can do it with the method `RetrieveFromCommandLineOrEnvironment`. You can pass the command line `longName` and/or `shortName` (the `longName` has priority over the `shortName`) and retrieve the **first** found value. If no value is found or can not be retrieved from the command line, then the `variableName` from the environment is retrieved:
+
+```csharp
+string value1 = propertyRetriver.RetrieveFromCommandLineOrEnvironment("longName", "variableName");
+string value2 = propertyRetriever.RetrieveFromCommandLineOrEnvironment<string>('l', "variableName");
+int values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<int>("longName", 'l', "variableName");
+double values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<double>("longName", "variableName");
+char values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<char>('l', "variableName");
+bool values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<bool>("longName", 'l', "variableName");
+```
+
+The method ``RetrieveFromCommandLineOrEnvironment` ` can throw an ` `ArgumentException` if the environment variable name is invalid or a `InvalidOperationException` if the variable is not found or can not be converted. And just like the other methods, you can receive a **fallback** value if no value can be retrieved or converted:
+
+```csharp
+string value1 = propertyRetriver.RetrieveFromCommandLineOrEnvironment("longName", "variableName", "fallbackValue");
+string value2 = propertyRetriever.RetrieveFromCommandLineOrEnvironment<string>('l', "variableName", "fallbackValue");
+int values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<int>("longName", 'l', "variableName", 1);
+double values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<double>("longName", "variableName", 2.5);
+char values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<char>('l', "variableName", 'c');
+bool values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<bool>("longName", 'l', "variableName", true);
+```
 
