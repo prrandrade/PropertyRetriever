@@ -218,6 +218,5 @@
         public T RetrieveFromCommandLineOrEnvironment<T>(string longName, char? shortName, string variableName, T fallbackValue);
 
         #endregion
-
     }
 }

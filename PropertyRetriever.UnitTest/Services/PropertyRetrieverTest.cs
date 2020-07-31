@@ -2,6 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
+    using System.Globalization;
     using System.Linq;
     using Interfaces;
     using Moq;
@@ -101,7 +102,7 @@
                 .Throws<Exception>();
 
             // act
-            var result = _propertyRetriever.RetrieveFromEnvironment<T>(variableName, fallbackValue);
+            var result = _propertyRetriever.RetrieveFromEnvironment(variableName, fallbackValue);
 
             // assert
             _localEnvironmentMock.Verify(x => x.GetEnvironmentVariable(variableName), Times.Once);
@@ -385,7 +386,7 @@
                 .Returns(commandLine.Split(' '));
 
             // act
-            var result = _propertyRetriever.RetrieveFromCommandLine<T>(shortName, fallback);
+            var result = _propertyRetriever.RetrieveFromCommandLine(shortName, fallback);
 
             // assert
             Assert.Equal(fallback, result.ToArray());
@@ -420,7 +421,7 @@
                 .Returns(commandLine.Split(' '));
 
             // act
-            var result = _propertyRetriever.RetrieveFromCommandLine<T>(longName, fallback);
+            var result = _propertyRetriever.RetrieveFromCommandLine(longName, fallback);
 
             // assert
             Assert.Equal(fallback, result.ToArray());
@@ -531,7 +532,319 @@
                 .Returns(new[] { "program.exe", "--longName", "u", "-c", "test" });
 
             // act
-            var result = _propertyRetriever.RetrieveFromCommandLine<int>(longName, shortName, fallbackValue);
+            var result = _propertyRetriever.RetrieveFromCommandLine(longName, shortName, fallbackValue);
+
+            // assert
+            Assert.Equal(fallbackValue, result);
+        }
+
+        #endregion
+
+        #region RetrieveFromCommandLineOrEnvironment - String
+
+        [Theory]
+        [InlineData("program.exe -c value", "value", 'c', "variableName")]
+        [InlineData("program.exe -d otherValue", "value", 'c', "variableName")]
+        public void RetrieveFromCommandLineOrEnvironment_String_ShortName_Environment(string commandLine, string desiredValue, char shortName, string variableName)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Returns(desiredValue);
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment(shortName, variableName);
+
+            // assert
+            Assert.Equal(desiredValue, result);
+        }
+
+        [Fact]
+        public void RetrieveFromCommandLineOrEnvironment_String_ShortName_Environment_FallbackValue()
+        {
+            // arrange
+            const char shortName = 'c';
+            const string variableName = "variableName";
+            const string commandLine = "program.exe";
+            const string fallbackValue = "fallback";
+
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Throws<Exception>();
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment(shortName, variableName, fallbackValue);
+
+            // assert
+            Assert.Equal(fallbackValue, result);
+        }
+
+        [Theory]
+        [InlineData("program.exe --longName value", "value", "longName", "variableName")]
+        [InlineData("program.exe --anotherName otherValue", "value", "longName", "variableName")]
+        public void RetrieveFromCommandLineOrEnvironment_String_LongName_Environment(string commandLine, string desiredValue, string longName, string variableName)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Returns(desiredValue);
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment(longName, variableName);
+
+            // assert
+            Assert.Equal(desiredValue, result);
+        }
+
+        [Fact]
+        public void RetrieveFromCommandLineOrEnvironment_String_LongName_Environment_FallbackValue()
+        {
+            // arrange
+            const string longName = "longName";
+            const string variableName = "variableName";
+            const string commandLine = "program.exe";
+            const string fallbackValue = "fallback";
+
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Throws<Exception>();
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment(longName, variableName, fallbackValue);
+
+            // assert
+            Assert.Equal(fallbackValue, result);
+        }
+
+        [Theory]
+        [InlineData("program.exe --longName value -c otherValue", "value", "longName", 'c', "variableName")]
+        [InlineData("program.exe -c value --longName otherValue", "value", "longName", 'c', "variableName")]
+        [InlineData("program.exe -d value --anotherName otherValue", "value", "longName", 'c', "variableName")]
+        public void RetrieveFromCommandLineOrEnvironment_String_LongName_ShortName_Environment(string commandLine, string desiredValue, string longName, char shortName, string variableName)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Returns(desiredValue);
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment(longName, shortName, variableName);
+
+            // assert
+            Assert.Equal(desiredValue, result);
+        }
+        
+        [Fact]
+        public void RetrieveFromCommandLineOrEnvironment_String_LongName_ShortName_Environment_FallbackValue()
+        {
+            // arrange
+            const char shortName = 'c';
+            const string longName = "longName";
+            const string variableName = "variableName";
+            const string commandLine = "program.exe";
+            const string fallbackValue = "fallback";
+
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Throws<Exception>();
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment(longName, shortName, variableName, fallbackValue);
+
+            // assert
+            Assert.Equal(fallbackValue, result);
+        }
+
+        #endregion
+
+        #region RetrieveFromCommandLineOrEnvironment - Generic
+
+        [Theory]
+        [InlineData("program.exe -c 1", 1, 'c', "variableName")]
+        [InlineData("program.exe -d otherValue", 1, 'c', "variableName")]
+        [InlineData("program.exe -c 1.234", 1.234, 'c', "variableName")]
+        [InlineData("program.exe -d otherValue", 1.234, 'c', "variableName")]
+        [InlineData("program.exe -c true", true, 'c', "variableName")]
+        [InlineData("program.exe -d otherValue", true, 'c', "variableName")]
+        [InlineData("program.exe -c t", 't', 'c', "variableName")]
+        [InlineData("program.exe -d otherValue", 't', 'c', "variableName")]
+        public void RetrieveFromCommandLineOrEnvironment_Generic_ShortName_Environment<T>(string commandLine, T desiredValue, char shortName, string variableName)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Returns(FormattableString.Invariant($"{desiredValue}"));
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment<T>(shortName, variableName);
+
+            // assert
+            Assert.Equal(desiredValue, result);
+        }
+
+        [Theory]
+        [InlineData(1)]
+        [InlineData(2.4)]
+        [InlineData('c')]
+        [InlineData(true)]
+        public void RetrieveFromCommandLineOrEnvironment_Generic_ShortName_Environment_FallbackValue<T>(T fallbackValue)
+        {
+            // arrange
+            const char shortName = 'c';
+            const string variableName = "variableName";
+            const string commandLine = "program.exe";
+
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Throws<Exception>();
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment(shortName, variableName, fallbackValue);
+
+            // assert
+            Assert.Equal(fallbackValue, result);
+        }
+
+        [Theory]
+        [InlineData("program.exe --longName x", 'x', "longName", "variableName")]
+        [InlineData("program.exe --anotherName otherValue", 'x', "longName", "variableName")]
+        [InlineData("program.exe --longName 4", 4, "longName", "variableName")]
+        [InlineData("program.exe --anotherName otherValue", 4, "longName", "variableName")]
+        [InlineData("program.exe --longName 4.6", 4.6, "longName", "variableName")]
+        [InlineData("program.exe --anotherName otherValue", 4.6, "longName", "variableName")]
+        [InlineData("program.exe --longName 4.6", false, "longName", "variableName")]
+        [InlineData("program.exe --anotherName otherValue", false, "longName", "variableName")]
+        public void RetrieveFromCommandLineOrEnvironment_Generic_LongName_Environment<T>(string commandLine, T desiredValue, string longName, string variableName)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Returns(FormattableString.Invariant($"{desiredValue}"));
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment<T>(longName, variableName);
+
+            // assert
+            Assert.Equal(desiredValue, result);
+        }
+
+        [Theory]
+        [InlineData(794525)]
+        [InlineData(0.00009)]
+        [InlineData('x')]
+        [InlineData(false)]
+        public void RetrieveFromCommandLineOrEnvironment_Generic_LongName_Environment_FallbackValue<T>(T fallbackValue)
+        {
+            // arrange
+            const string longName = "longName";
+            const string variableName = "variableName";
+            const string commandLine = "program.exe";
+
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Throws<Exception>();
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment(longName, variableName, fallbackValue);
+
+            // assert
+            Assert.Equal(fallbackValue, result);
+        }
+
+        [Theory]
+        [InlineData("program.exe --longName 1 -c otherValue", 1, "longName", 'c', "variableName")]
+        [InlineData("program.exe -c 1 --longName otherValue", 1, "longName", 'c', "variableName")]
+        [InlineData("program.exe -d 2 --anotherName otherValue", 1, "longName", 'c', "variableName")]
+        [InlineData("program.exe --longName 1.0000008 -c otherValue", 1.0000008, "longName", 'c', "variableName")]
+        [InlineData("program.exe -c 1.0000008 --longName otherValue", 1.0000008, "longName", 'c', "variableName")]
+        [InlineData("program.exe -d 5 --anotherName otherValue", 1.0000008, "longName", 'c', "variableName")]
+        [InlineData("program.exe --longName t -c otherValue", 't', "longName", 'c', "variableName")]
+        [InlineData("program.exe -c t --longName otherValue", 't', "longName", 'c', "variableName")]
+        [InlineData("program.exe -d t --anotherName otherValue", 't', "longName", 'c', "variableName")]
+        [InlineData("program.exe --longName false -c otherValue", false, "longName", 'c', "variableName")]
+        [InlineData("program.exe -c false --longName otherValue", false, "longName", 'c', "variableName")]
+        [InlineData("program.exe -d true --anotherName otherValue", false, "longName", 'c', "variableName")]
+        public void RetrieveFromCommandLineOrEnvironment_Generic_LongName_ShortName_Environment<T>(string commandLine, T desiredValue, string longName, char shortName, string variableName)
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Returns(FormattableString.Invariant($"{desiredValue}"));
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment<T>(longName, shortName, variableName);
+
+            // assert
+            Assert.Equal(desiredValue, result);
+        }
+        
+        [Theory]
+        [InlineData(463534252)]
+        [InlineData(1.00009)]
+        [InlineData('x')]
+        [InlineData(true)]
+        public void RetrieveFromCommandLineOrEnvironment_Generic_LongName_ShortName_Environment_FallbackValue<T>(T fallbackValue)
+        {
+            // arrange
+            const char shortName = 'c';
+            const string longName = "longName";
+            const string variableName = "variableName";
+            const string commandLine = "program.exe";
+
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(commandLine.Split(' '));
+
+            _localEnvironmentMock
+                .Setup(x => x.GetEnvironmentVariable(variableName))
+                .Throws<Exception>();
+
+            // act
+            var result = _propertyRetriever.RetrieveFromCommandLineOrEnvironment(longName, shortName, variableName, fallbackValue);
 
             // assert
             Assert.Equal(fallbackValue, result);
