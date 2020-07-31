@@ -22,8 +22,8 @@
         /// </summary>
         /// <param name="variableName">Environment variable name.</param>
         /// <returns>Environment variable value.</returns>
-        /// <exception cref="System.ArgumentException">Thrown when the environment variable name is not valid.</exception>
-        /// <exception cref="System.InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
+        /// <exception cref="ArgumentException">Thrown when the environment variable name is not valid.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
         public string RetrieveFromEnvironment(string variableName)
             => RetrieveFromEnvironment<string>(variableName);
 
@@ -46,8 +46,8 @@
         /// <typeparam name="T">Desired type that the environment variable value will be converted.</typeparam>
         /// <param name="variableName">Environment variable name.</param>
         /// <returns>Environment variable value converted to <typeparamref name="T"/>.</returns>
-        /// <exception cref="System.ArgumentException">Thrown when the environment variable name is not valid.</exception>
-        /// <exception cref="System.InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
+        /// <exception cref="ArgumentException">Thrown when the environment variable name is not valid.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
         public T RetrieveFromEnvironment<T>(string variableName)
         {
             var environmentValue = _localEnvironment.GetEnvironmentVariable(variableName);
@@ -110,7 +110,7 @@
         /// <param name="longName">Long name (identified with the '--' prefix as a command line parameter).</param>
         /// <param name="shortName">Short name (identified with the '-' prefix as a command line parameter).</param>
         /// <returns>True if at least one property is found, False otherwise.</returns>
-        /// <exception cref="System.ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are null.</exception>
+        /// <exception cref="ArgumentException">Thrown if <paramref name="longName"/> and <paramref name="shortName"/> are null.</exception>
         public bool CheckFromCommandLine(string longName, char? shortName)
         {
             if (longName == null && shortName == null)
@@ -129,7 +129,7 @@
         #region Retrieve only from Command Line - String
 
         /// <summary>
-        /// Retrieve a list of values passed from the command line..
+        /// Retrieve a list of values passed from the command line.
         /// </summary>
         /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line.</returns>
@@ -146,9 +146,9 @@
             => RetrieveFromCommandLine(null, shortName, fallbackValue);
 
         /// <summary>
-        /// Retrieve a list of values passed from the command line..
+        /// Retrieve a list of values passed from the command line.
         /// </summary>
-        /// <param name="longName">Property short name (identified with the '--' prefix as a command line parameter).</param>
+        /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
         /// <returns>List of properties retrieved from command line.</returns>
         public IEnumerable<string> RetrieveFromCommandLine(string longName)
             => RetrieveFromCommandLine<string>(longName, shortName: null);
@@ -294,21 +294,68 @@
 
         #region Retrieve from Command Line then from Environment - String
 
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment as a fallback
+        /// </summary>
+        /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <returns>Value retrieved from command line or environment.</returns>
+        /// <exception cref="ArgumentException">Thrown when the environment variable name is not valid.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
+        public string RetrieveFromCommandLineOrEnvironment(char shortName, string variableName)
+            => RetrieveFromCommandLineOrEnvironment<string>(null, shortName, variableName);
+
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment as a fallback
+        /// </summary>
+        /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
+        /// <returns>Value retrieved from command line or environment, or <paramref name="fallbackValue"/> if neither can be retrieved.</returns>
+        public string RetrieveFromCommandLineOrEnvironment(char shortName, string variableName, string fallbackValue)
+            => RetrieveFromCommandLineOrEnvironment<string>(null, shortName, variableName, fallbackValue);
+
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment as a fallback
+        /// </summary>
+        /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <returns>Value retrieved from command line or environment.</returns>
+        /// <exception cref="ArgumentException">Thrown when the environment variable name is not valid.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
         public string RetrieveFromCommandLineOrEnvironment(string longName, string variableName)
             => RetrieveFromCommandLineOrEnvironment<string>(longName, shortName: null, variableName);
 
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment.
+        /// </summary>
+        /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
+        /// <returns>Value retrieved from command line or environment, or <paramref name="fallbackValue"/> if neither can be retrieved.</returns>
         public string RetrieveFromCommandLineOrEnvironment(string longName, string variableName, string fallbackValue)
             => RetrieveFromCommandLineOrEnvironment<string>(longName, null, variableName, fallbackValue);
 
-        public string RetrieveFromCommandLineOrEnvironment(char shortValue, string variableName)
-            => RetrieveFromCommandLineOrEnvironment<string>(null, shortValue, variableName);
-
-        public string RetrieveFromCommandLineOrEnvironment(char shortValue, string variableName, string fallbackValue)
-            => RetrieveFromCommandLineOrEnvironment<string>(null, shortValue, variableName, fallbackValue);
-
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment as a fallback
+        /// </summary>
+        /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
+        /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <returns>Value retrieved from command line or environment.</returns>
+        /// <exception cref="ArgumentException">Thrown when the environment variable name is not valid.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
         public string RetrieveFromCommandLineOrEnvironment(string longName, char? shortName, string variableName)
             => RetrieveFromCommandLineOrEnvironment<string>(longName, shortName, variableName);
 
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment as a fallback
+        /// </summary>
+        /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
+        /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
+        /// /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <returns>Value retrieved from command line or environment, or <paramref name="fallbackValue"/> if neither can be retrieved.</returns>
         public string RetrieveFromCommandLineOrEnvironment(string longName, char? shortName, string variableName, string fallbackValue)
             => RetrieveFromCommandLineOrEnvironment<string>(longName, shortName, variableName, fallbackValue);
 
@@ -316,18 +363,62 @@
 
         #region Retrieve from Command Line then from Environment - Generic
 
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment as a fallback
+        /// </summary>
+        /// <typeparam name="T">Desired type that the retrieved value will be converted.</typeparam>
+        /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <returns>Value retrieved from command line or environment converted to <typeparamref name="T"/>.</returns>
+        /// <exception cref="ArgumentException">Thrown when the environment variable name is not valid.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
+        public T RetrieveFromCommandLineOrEnvironment<T>(char shortName, string variableName)
+            => RetrieveFromCommandLineOrEnvironment<T>(null, shortName, variableName);
+
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment as a fallback
+        /// </summary>
+        /// <typeparam name="T">Desired type that the retrieved value will be converted.</typeparam>
+        /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
+        /// <returns>Value retrieved from command line or environment converted to <typeparamref name="T"/>, or <paramref name="fallbackValue"/> if neither can be retrieved.</returns>
+        public T RetrieveFromCommandLineOrEnvironment<T>(char shortName, string variableName, T fallbackValue)
+            => RetrieveFromCommandLineOrEnvironment(null, shortName, variableName, fallbackValue);
+
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment as a fallback
+        /// </summary>
+        /// <typeparam name="T">Desired type that the retrieved value will be converted.</typeparam>
+        /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <returns>Value retrieved from command line or environment converted to <typeparamref name="T"/>.</returns>
+        /// <exception cref="ArgumentException">Thrown when the environment variable name is not valid.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
         public T RetrieveFromCommandLineOrEnvironment<T>(string longName, string variableName)
             => RetrieveFromCommandLineOrEnvironment<T>(longName, null, variableName);
 
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment.
+        /// </summary>
+        /// <typeparam name="T">Desired type that the retrieved value will be converted.</typeparam>
+        /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
+        /// <returns>Value retrieved from command line or environment converted to <typeparamref name="T"/>, or <paramref name="fallbackValue"/> if neither can be retrieved.</returns>
         public T RetrieveFromCommandLineOrEnvironment<T>(string longName, string variableName, T fallbackValue)
-            => RetrieveFromCommandLineOrEnvironment<T>(longName, null, variableName, fallbackValue);
+            => RetrieveFromCommandLineOrEnvironment(longName, null, variableName, fallbackValue);
 
-        public T RetrieveFromCommandLineOrEnvironment<T>(char shortValue, string variableName)
-            => RetrieveFromCommandLineOrEnvironment<T>(null, shortValue, variableName);
-
-        public T RetrieveFromCommandLineOrEnvironment<T>(char shortValue, string variableName, T fallbackValue)
-            => RetrieveFromCommandLineOrEnvironment<T>(null, shortValue, variableName, fallbackValue);
-
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment as a fallback
+        /// </summary>
+        /// <typeparam name="T">Desired type that the retrieved value will be converted.</typeparam>
+        /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
+        /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <returns>Value retrieved from command line or environment converted to <typeparamref name="T"/>.</returns>
+        /// <exception cref="ArgumentException">Thrown when the environment variable name is not valid.</exception>
+        /// <exception cref="InvalidOperationException">Thrown when the variable is not found or can not be converted.</exception>
         public T RetrieveFromCommandLineOrEnvironment<T>(string longName, char? shortName, string variableName)
         {
             try
@@ -342,6 +433,15 @@
             }
         }
 
+        /// <summary>
+        /// Tries to retrieve a property from the command line or from the environment as a fallback
+        /// </summary>
+        /// <typeparam name="T">Desired type that the retrieved value will be converted.</typeparam>
+        /// <param name="shortName">Property short name (identified with the '-' prefix as a command line parameter).</param>
+        /// <param name="longName">Property long name (identified with the '--' prefix as a command line parameter).</param>
+        /// <param name="variableName">Environment variable name.</param>
+        /// <param name="fallbackValue">Fallback value if something goes wrong.</param>
+        /// <returns>Value retrieved from command line or environment converted to <typeparamref name="T"/>, or <paramref name="fallbackValue"/> if neither can be retrieved.</returns>
         public T RetrieveFromCommandLineOrEnvironment<T>(string longName, char? shortName, string variableName, T fallbackValue)
         {
             try
