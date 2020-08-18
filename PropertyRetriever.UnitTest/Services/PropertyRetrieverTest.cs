@@ -9,6 +9,12 @@
     using PropertyRetriever.Services;
     using Xunit;
 
+    public enum Values
+    {
+        Value1,
+        Value2
+    }
+
     public class PropertyRetrieverTest
     {
         private readonly Mock<ILocalEnvironment> _localEnvironmentMock;
@@ -72,6 +78,8 @@
         [InlineData("TrUe", true)]
         [InlineData("False", false)]
         [InlineData("FaLsE", false)]
+        [InlineData("value1", Values.Value1)]
+        [InlineData("VALUE2", Values.Value2)]
         public void RetrieveFromEnvironment<T>(string variableValue, T expectedVariableValue)
         {
             // arrange
@@ -93,6 +101,7 @@
         [InlineData(-1)]
         [InlineData(2.23456)]
         [InlineData(false)]
+        [InlineData(Values.Value2)]
         public void RetrieveFromEnvironment_FallbackValue_NotFound<T>(T fallbackValue)
         {
             // arrange
@@ -114,6 +123,7 @@
         [InlineData("a", -1)]
         [InlineData("a", 2.23456)]
         [InlineData("a", false)]
+        [InlineData("a", Values.Value2)]
         public void RetrieveFromEnvironment_FallbackValue_NotConverted<T>(string variableValue, T fallbackValue)
         {
             // arrange
@@ -361,6 +371,7 @@
         [InlineData('c', "program.exe -C test -C 1234_5", new[] { "test", "1234_5" })]
         [InlineData('C', "program.exe -C 123.4 -c 567.8", new[] { 123.4, 567.8 })]
         [InlineData('c', "program.exe -c true -e false", new[] { true })]
+        [InlineData('c', "program.exe -c Value1 -C value2", new[] { Values.Value1, Values.Value2 })]
         public void RetrieveFromCommandLine_Generic_ShortName<T>(char shortName, string commandLine, T[] expectedResult)
         {
             // arrange
@@ -378,6 +389,7 @@
         [Theory]
         [InlineData('c', "program.exe -d 1 -e a -f a -g test", new[] { 1, 2, 3 })]
         [InlineData('c', "program.exe -D 456 -d 1234", new[] { "test1", "test2" })]
+        [InlineData('c', "program.exe -c Value3 -C value4", new[] { Values.Value1, Values.Value2 })]
         public void RetrieveFromCommandLine_Generic_ShortName_FallbackValue<T>(char shortName, string commandLine, T[] fallback)
         {
             // arrange
@@ -396,6 +408,7 @@
         [InlineData("prop", "program.exe --PROP 1 --ProP 2 --other a --PRop 3", new[] { 1, 2, 3 })]
         [InlineData("ProP", "program.exe --pROp test --PROP test2", new[] { "test", "test2" })]
         [InlineData("ProP", "program.exe --otherProp test --Prop t", new[] { 't' })]
+        [InlineData("ProP", "program.exe --otherProp Value3 --Prop value2", new[] { Values.Value2 })]
         public void RetrieveFromCommandLine_Generic_LongName<T>(string longName, string commandLine, T[] expectedResult)
         {
             // arrange
@@ -413,6 +426,7 @@
         [Theory]
         [InlineData("prop", "program.exe --Prop true -o --PROP false", new[] { true, false })]
         [InlineData("PROP", "program.exe --prOP 456 -d 1234", new[] { 456 })]
+        [InlineData("prop", "program.exe --PrOP Value1 -d Value2", new[] { Values.Value1 })]
         public void RetrieveFromCommandLine_Generic_LongName_FallbackValue<T>(string longName, string commandLine, T[] fallback)
         {
             // arrange
@@ -430,6 +444,7 @@
         [Theory]
         [InlineData("prop", 'c', "program.exe --PROP 123 -c 456", new[] { 123, 456 })]
         [InlineData("prop", 'c', "program.exe --ProP abc -C def", new[] { "abc", "def" })]
+        [InlineData("prop", 'c', "program.exe --PROP Value2 -c Value1", new[] { Values.Value2, Values.Value1 })]
         public void RetrieveFromCommandLine_Generic_LongName_ShortName<T>(string longName, char? shortName, string commandLine, T[] expectedResult)
         {
             // arrange
@@ -446,6 +461,7 @@
 
         [Theory]
         [InlineData("prop", "program.exe --ProP 55 -C def", new[] { 55 })]
+        [InlineData("prop", "program.exe --PrOP Value1 -C def", new[] { Values.Value1 })]
         public void RetrieveFromCommandLine_Generic_LongName_ShortName_Null<T>(string longName, string commandLine, T[] expectedResult)
         {
             // arrange
@@ -462,6 +478,7 @@
 
         [Theory]
         [InlineData('C', "program.exe --ProP 55 -c yy", new[] { "yy" })]
+        [InlineData('C', "program.exe --PRoP 55 -C Value2", new[] { Values.Value2 })]
         public void RetrieveFromCommandLine_Generic_LongName_Null_ShortName<T>(char shortName, string commandLine, T[] expectedResult)
         {
             // arrange
@@ -653,7 +670,7 @@
             // assert
             Assert.Equal(desiredValue, result);
         }
-        
+
         [Fact]
         public void RetrieveFromCommandLineOrEnvironment_String_LongName_ShortName_Environment_FallbackValue()
         {
@@ -692,6 +709,8 @@
         [InlineData("program.exe -d otherValue", true, 'c', "variableName")]
         [InlineData("program.exe -c t", 't', 'c', "variableName")]
         [InlineData("program.exe -d otherValue", 't', 'c', "variableName")]
+        [InlineData("program.exe -c Value1", Values.Value1, 'c', "variableName")]
+        [InlineData("program.exe -d otherValue", Values.Value2, 'c', "variableName")]
         public void RetrieveFromCommandLineOrEnvironment_Generic_ShortName_Environment<T>(string commandLine, T desiredValue, char shortName, string variableName)
         {
             // arrange
@@ -715,6 +734,7 @@
         [InlineData(2.4)]
         [InlineData('c')]
         [InlineData(true)]
+        [InlineData(Values.Value1)]
         public void RetrieveFromCommandLineOrEnvironment_Generic_ShortName_Environment_FallbackValue<T>(T fallbackValue)
         {
             // arrange
@@ -746,6 +766,8 @@
         [InlineData("program.exe --anotherName otherValue", 4.6, "longName", "variableName")]
         [InlineData("program.exe --longName 4.6", false, "longName", "variableName")]
         [InlineData("program.exe --anotherName otherValue", false, "longName", "variableName")]
+        [InlineData("program.exe --longName VALUE1", Values.Value1, "longName", "variableName")]
+        [InlineData("program.exe --anotherName otherValue", Values.Value2, "longName", "variableName")]
         public void RetrieveFromCommandLineOrEnvironment_Generic_LongName_Environment<T>(string commandLine, T desiredValue, string longName, string variableName)
         {
             // arrange
@@ -769,6 +791,7 @@
         [InlineData(0.00009)]
         [InlineData('x')]
         [InlineData(false)]
+        [InlineData(Values.Value2)]
         public void RetrieveFromCommandLineOrEnvironment_Generic_LongName_Environment_FallbackValue<T>(T fallbackValue)
         {
             // arrange
@@ -804,6 +827,8 @@
         [InlineData("program.exe --longName false -c otherValue", false, "longName", 'c', "variableName")]
         [InlineData("program.exe -c false --longName otherValue", false, "longName", 'c', "variableName")]
         [InlineData("program.exe -d true --anotherName otherValue", false, "longName", 'c', "variableName")]
+        [InlineData("program.exe -c VaLue2 --longName otherValue", Values.Value2, "longName", 'c', "variableName")]
+        [InlineData("program.exe -d Value1 --anotherName otherValue", Values.Value1, "longName", 'c', "variableName")]
         public void RetrieveFromCommandLineOrEnvironment_Generic_LongName_ShortName_Environment<T>(string commandLine, T desiredValue, string longName, char shortName, string variableName)
         {
             // arrange
@@ -821,12 +846,13 @@
             // assert
             Assert.Equal(desiredValue, result);
         }
-        
+
         [Theory]
         [InlineData(463534252)]
         [InlineData(1.00009)]
         [InlineData('x')]
         [InlineData(true)]
+        [InlineData(Values.Value1)]
         public void RetrieveFromCommandLineOrEnvironment_Generic_LongName_ShortName_Environment_FallbackValue<T>(T fallbackValue)
         {
             // arrange
@@ -860,7 +886,7 @@
             // arrange
             _localEnvironmentMock
                 .Setup(x => x.GetCommandLineArgs())
-                .Returns(new[] {"C:\\test\\test.test3.exe", "-c", "-c"});
+                .Returns(new[] { "C:\\test\\test.test3.exe", "-c", "-c" });
 
             // act
             var result = _propertyRetriever.RetrieveServiceName();
@@ -875,7 +901,7 @@
             // arrange
             _localEnvironmentMock
                 .Setup(x => x.GetCommandLineArgs())
-                .Returns(new[] {"", "-c", "-c"});
+                .Returns(new[] { "", "-c", "-c" });
             var expectedServiceName = Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location);
 
             // act

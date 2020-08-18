@@ -56,7 +56,10 @@
 
             try
             {
-                finalValue = (T)Convert.ChangeType(environmentValue, typeof(T), CultureInfo.InvariantCulture);
+                if (typeof(T).IsEnum)
+                    finalValue = (T)Enum.Parse(typeof(T), environmentValue, true);
+                else
+                    finalValue = (T)Convert.ChangeType(environmentValue, typeof(T), CultureInfo.InvariantCulture);
             }
             catch
             {
@@ -248,11 +251,17 @@
                 {
                     if (!string.IsNullOrEmpty(longName) && commandArray[i].ToLowerInvariant().Equals($"--{longName.ToLowerInvariant()}"))
                     {
-                        returnedList.Add((T)Convert.ChangeType(commandArray[i + 1], typeof(T), CultureInfo.InvariantCulture));
+                        if (typeof(T).IsEnum)
+                            returnedList.Add((T)Enum.Parse(typeof(T), commandArray[i + 1], true));
+                        else
+                            returnedList.Add((T)Convert.ChangeType(commandArray[i + 1], typeof(T), CultureInfo.InvariantCulture));
                     }
                     else if (shortName != null && commandArray[i].ToLowerInvariant().Equals($"-{char.ToLowerInvariant(shortName.Value)}"))
                     {
-                        returnedList.Add((T)Convert.ChangeType(commandArray[i + 1], typeof(T), CultureInfo.InvariantCulture));
+                        if (typeof(T).IsEnum)
+                            returnedList.Add((T)Enum.Parse(typeof(T), commandArray[i + 1], true));
+                        else
+                            returnedList.Add((T)Convert.ChangeType(commandArray[i + 1], typeof(T), CultureInfo.InvariantCulture));
                     }
                 }
                 catch
@@ -467,8 +476,8 @@
         {
             var commandArray = _localEnvironment.GetCommandLineArgs().ToList();
             var bruteServiceName = commandArray[0];
-            return Path.GetFileNameWithoutExtension(string.IsNullOrWhiteSpace(bruteServiceName) 
-                ? System.Reflection.Assembly.GetEntryAssembly().Location 
+            return Path.GetFileNameWithoutExtension(string.IsNullOrWhiteSpace(bruteServiceName)
+                ? System.Reflection.Assembly.GetEntryAssembly().Location
                 : bruteServiceName);
         }
 
