@@ -319,5 +319,15 @@
         public T RetrieveFromCommandLineOrEnvironment<T>(string longName, char? shortName, string variableName, T fallbackValue);
 
         #endregion
+
+        #region Special cases
+
+        /// <summary>
+        /// Retrieve the name of the executing service (without extensions)
+        /// </summary>
+        /// <returns>Executing service name without extensions</returns>
+        string RetrieveServiceName();
+
+        #endregion
     }
 }

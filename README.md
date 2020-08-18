@@ -9,6 +9,7 @@ PropertyRetriever
 - [Checking parameters from Command Line](#checking-parameters-from-command-line)
 - [Retrieving parameters from Command Line](#retrieving-parameters-from-command-line)
 - [Retrieving parameters from Command Line or Environment](#retrieving-parameters-from-command-line-or-environment)
+- [Special cases](#special-cases)
 
 
 
@@ -192,5 +193,13 @@ int values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<int>("longNa
 double values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<double>("longName", "variableName", 2.5);
 char values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<char>('l', "variableName", 'c');
 bool values2 = propertyRetriver.RetrieveFromCommandLineOrEnvironment<bool>("longName", 'l', "variableName", true);
+```
+
+# Special Cases
+
+You can get the service name using the method `RetrieveServiceName`. The method will try to get the first command line parameter (which is normally the program path and name) and treat it. If it can not recover the name, then the current executing assembly will be verified, via reflection
+
+```csharp
+string serviceName = propertyRetriever.RetrieveServiceName();
 ```
 

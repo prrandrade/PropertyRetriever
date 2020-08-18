@@ -3,6 +3,7 @@
     using System;
     using System.Collections.Generic;
     using System.Globalization;
+    using System.IO;
     using System.Linq;
     using Interfaces;
 
@@ -452,6 +453,23 @@
             {
                 return fallbackValue;
             }
+        }
+
+        #endregion
+
+        #region Special Cases
+
+        /// <summary>
+        /// Retrieve the name of the executing service (without extensions)
+        /// </summary>
+        /// <returns>Executing service name without extensions</returns>
+        public string RetrieveServiceName()
+        {
+            var commandArray = _localEnvironment.GetCommandLineArgs().ToList();
+            var bruteServiceName = commandArray[0];
+            return Path.GetFileNameWithoutExtension(string.IsNullOrWhiteSpace(bruteServiceName) 
+                ? System.Reflection.Assembly.GetEntryAssembly().Location 
+                : bruteServiceName);
         }
 
         #endregion

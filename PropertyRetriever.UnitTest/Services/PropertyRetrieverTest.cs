@@ -2,7 +2,7 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Globalization;
+    using System.IO;
     using System.Linq;
     using Interfaces;
     using Moq;
@@ -848,6 +848,41 @@
 
             // assert
             Assert.Equal(fallbackValue, result);
+        }
+
+        #endregion
+
+        #region Special cases
+
+        [Fact]
+        public void RetrieveServiceName_FullNameFromCommandLine()
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(new[] {"C:\\test\\test.test3.exe", "-c", "-c"});
+
+            // act
+            var result = _propertyRetriever.RetrieveServiceName();
+
+            // assert
+            Assert.Equal("test.test3", result);
+        }
+
+        [Fact]
+        public void RetrieveServiceName_EmptyNameFromCommandLine()
+        {
+            // arrange
+            _localEnvironmentMock
+                .Setup(x => x.GetCommandLineArgs())
+                .Returns(new[] {"", "-c", "-c"});
+            var expectedServiceName = Path.GetFileNameWithoutExtension(System.Reflection.Assembly.GetEntryAssembly().Location);
+
+            // act
+            var result = _propertyRetriever.RetrieveServiceName();
+
+            // assert
+            Assert.Equal(expectedServiceName, result);
         }
 
         #endregion
