@@ -1,9 +1,9 @@
-﻿namespace PropertyRetriever
+﻿namespace RA.PropertyRetriever
 {
-    using Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.DependencyInjection.Extensions;
-    using Services;
+    using RA.PropertyRetriever.Services;
+    using RA.PropertyRetriever.Services.Interfaces;
 
     public static class Extensions
     {
@@ -14,7 +14,7 @@
         /// <returns>Service Collection with MyEnvironment dependencies injected</returns>
         public static IServiceCollection AddLocalEnvironment(this IServiceCollection @this)
         {
-            @this.TryAddSingleton<ILocalEnvironment, LocalEnvironment>();
+            @this.TryAddSingleton<ILocalEnvironmentService, LocalEnvironmentService>();
             return @this;
         }
 
@@ -26,7 +26,7 @@
         public static IServiceCollection AddPropertyRetriever(this IServiceCollection @this)
         {
             @this.AddLocalEnvironment();
-            @this.TryAddSingleton<IPropertyRetriever, PropertyRetriever>();
+            @this.TryAddSingleton<IPropertyRetrieverService, PropertyRetrieverService>();
             return @this;
         }
     }

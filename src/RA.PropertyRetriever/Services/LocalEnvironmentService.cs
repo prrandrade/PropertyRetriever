@@ -1,9 +1,9 @@
-﻿namespace PropertyRetriever.Services
+﻿namespace RA.PropertyRetriever.Services
 {
     using System;
     using Interfaces;
 
-    public class LocalEnvironment : ILocalEnvironment
+    public class LocalEnvironmentService : ILocalEnvironmentService
     {
         public string[] GetCommandLineArgs()
         {

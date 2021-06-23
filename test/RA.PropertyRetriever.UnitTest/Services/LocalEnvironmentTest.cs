@@ -1,7 +1,7 @@
-﻿namespace PropertyRetriever.UnitTest.Services
+﻿namespace RA.PropertyRetriever.UnitTest.Services
 {
     using System;
-    using PropertyRetriever.Services;
+    using RA.PropertyRetriever.Services;
     using Xunit;
 
     public class LocalEnvironmentTest
@@ -12,7 +12,7 @@
         public void GetCommandLineArgs()
         {
             // arrange
-            var localEnvironment = new LocalEnvironment();
+            var localEnvironment = new LocalEnvironmentService();
             var expectedResult = Environment.GetCommandLineArgs();
 
             // act
@@ -30,7 +30,7 @@
         public void GetEnvironmentVariable_NoNameProvided()
         {
             // arrange
-            var localEnvironment = new LocalEnvironment();
+            var localEnvironment = new LocalEnvironmentService();
 
             // act
             var result = Record.Exception(() => localEnvironment.GetEnvironmentVariable(null));
@@ -44,7 +44,7 @@
         public void GetEnvironmentVariable_NullEnvironmentVariable()
         {
             // arrange
-            var localEnvironment = new LocalEnvironment();
+            var localEnvironment = new LocalEnvironmentService();
             const string environmentVariableName = "variable";
 
             // act
@@ -59,7 +59,7 @@
         public void GetEnvironmentVariable()
         {
             // arrange
-            var localEnvironment = new LocalEnvironment();
+            var localEnvironment = new LocalEnvironmentService();
             const string environmentVariableName = "variable";
             const string environmentVariableValue = "value";
             Environment.SetEnvironmentVariable(environmentVariableName, environmentVariableValue);

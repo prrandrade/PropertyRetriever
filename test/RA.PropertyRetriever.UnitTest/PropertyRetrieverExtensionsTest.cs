@@ -1,7 +1,8 @@
-namespace PropertyRetriever.UnitTest
+namespace RA.PropertyRetriever.UnitTest
 {
-    using Interfaces;
     using Microsoft.Extensions.DependencyInjection;
+    using RA.PropertyRetriever;
+    using RA.PropertyRetriever.Services.Interfaces;
     using Xunit;
 
     public class PropertyRetrieverExtensionsTest
@@ -15,11 +16,11 @@ namespace PropertyRetriever.UnitTest
             // act
             services.AddLocalEnvironment();
             var container = services.BuildServiceProvider();
-            var service1 = container.GetService<ILocalEnvironment>();
-            var service2 = container.GetService<ILocalEnvironment>();
+            var service1 = container.GetService<ILocalEnvironmentService>();
+            var service2 = container.GetService<ILocalEnvironmentService>();
 
             // assert
-            Assert.NotNull(container.GetService<ILocalEnvironment>());
+            Assert.NotNull(container.GetService<ILocalEnvironmentService>());
             Assert.Equal(service1, service2);
         }
 
@@ -32,11 +33,11 @@ namespace PropertyRetriever.UnitTest
             // act
             services.AddPropertyRetriever();
             var container = services.BuildServiceProvider();
-            var service1 = container.GetService<IPropertyRetriever>();
-            var service2 = container.GetService<IPropertyRetriever>();
+            var service1 = container.GetService<IPropertyRetrieverService>();
+            var service2 = container.GetService<IPropertyRetrieverService>();
 
             // assert
-            Assert.NotNull(container.GetService<IPropertyRetriever>());
+            Assert.NotNull(container.GetService<IPropertyRetrieverService>());
             Assert.Equal(service1, service2);
         }
     }

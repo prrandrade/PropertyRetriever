@@ -1,6 +1,6 @@
-﻿namespace PropertyRetriever.Interfaces
+﻿namespace RA.PropertyRetriever.Services.Interfaces
 {
-    public interface ILocalEnvironment
+    public interface ILocalEnvironmentService
     {
         /// <summary>
         /// Retrieve all command line arguments

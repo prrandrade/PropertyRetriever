@@ -1,12 +1,12 @@
-﻿namespace PropertyRetriever.UnitTest.Services
+﻿namespace RA.PropertyRetriever.UnitTest.Services
 {
     using System;
     using System.Collections.Generic;
     using System.IO;
     using System.Linq;
-    using Interfaces;
     using Moq;
-    using PropertyRetriever.Services;
+    using RA.PropertyRetriever.Services;
+    using RA.PropertyRetriever.Services.Interfaces;
     using Xunit;
 
     public enum Values
@@ -17,13 +17,13 @@
 
     public class PropertyRetrieverTest
     {
-        private readonly Mock<ILocalEnvironment> _localEnvironmentMock;
-        private readonly PropertyRetriever _propertyRetriever;
+        private readonly Mock<ILocalEnvironmentService> _localEnvironmentMock;
+        private readonly PropertyRetrieverService _propertyRetriever;
 
         public PropertyRetrieverTest()
         {
-            _localEnvironmentMock = new Mock<ILocalEnvironment>();
-            _propertyRetriever = new PropertyRetriever(_localEnvironmentMock.Object);
+            _localEnvironmentMock = new Mock<ILocalEnvironmentService>();
+            _propertyRetriever = new PropertyRetrieverService(_localEnvironmentMock.Object);
         }
 
         #region RetrieveFromEnvironment - String
