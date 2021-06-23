@@ -8,24 +8,24 @@
     public static class Extensions
     {
         /// <summary>
-        /// Add MyEnvironment dependency injection
+        /// Add LocalEnvironmentService dependency injection
         /// </summary>
         /// <param name="this">Service Collection</param>
-        /// <returns>Service Collection with MyEnvironment dependencies injected</returns>
-        public static IServiceCollection AddLocalEnvironment(this IServiceCollection @this)
+        /// <returns>Service Collection with LocalEnvironmentService dependencies injected</returns>
+        public static IServiceCollection AddLocalEnvironmentService(this IServiceCollection @this)
         {
             @this.TryAddSingleton<ILocalEnvironmentService, LocalEnvironmentService>();
             return @this;
         }
 
         /// <summary>
-        /// Add PropertyRetriever dependency injection
+        /// Add PropertyRetrieverService dependency injection
         /// </summary>
         /// <param name="this">Service Collection</param>
-        /// <returns>Service Collection with PropertyRetriever dependencies injected</returns>
-        public static IServiceCollection AddPropertyRetriever(this IServiceCollection @this)
+        /// <returns>Service Collection with PropertyRetrieverService dependencies injected</returns>
+        public static IServiceCollection AddPropertyRetrieverService(this IServiceCollection @this)
         {
-            @this.AddLocalEnvironment();
+            @this.AddLocalEnvironmentService();
             @this.TryAddSingleton<IPropertyRetrieverService, PropertyRetrieverService>();
             return @this;
         }

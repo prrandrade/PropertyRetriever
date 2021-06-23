@@ -15,9 +15,9 @@ PropertyRetriever
 
 # Introduction
 
-This small project can be used to access command-line parameters or environment variables using dependency injection on .NET 5.0 Projects.
+This small project can be used to access command-line parameters or environment variables using dependency injection on .NET Core 3.1 Projects and newer.
 
-Nuget package: https://www.nuget.org/packages/PropertyRetriever/.
+Nuget package: https://www.nuget.org/packages/RA.PropertyRetriever/.
 
 
 
@@ -41,12 +41,10 @@ services.AddPropertyRetriever();
 
 If you use another dependency injection framework, two dependencies must be injected:
 
-- Interface `ILocalEnvironment` and implementation `LocalEnvironment`.
-- Interface `IPropertyRetriever` and implementation `PropertyRetriever`.
+- `ILocalEnvironmentService` interface with `LocalEnvironmentService` implementation.
+- `IPropertyRetrieverService` interface with `PropertyRetrieverService` implementation.
 
-The interface `IPropertyRetriever` can be injected on classes that will access the environment or the command line.
-
-
+The interface `IPropertyRetrieverService` can be injected on classes that will access the environment or the command line.
 
 # Retrieving variables from the Environment
 

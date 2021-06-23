@@ -14,7 +14,7 @@ namespace RA.PropertyRetriever.UnitTest
             var services = new ServiceCollection();
 
             // act
-            services.AddLocalEnvironment();
+            services.AddLocalEnvironmentService();
             var container = services.BuildServiceProvider();
             var service1 = container.GetService<ILocalEnvironmentService>();
             var service2 = container.GetService<ILocalEnvironmentService>();
@@ -31,7 +31,7 @@ namespace RA.PropertyRetriever.UnitTest
             var services = new ServiceCollection();
 
             // act
-            services.AddPropertyRetriever();
+            services.AddPropertyRetrieverService();
             var container = services.BuildServiceProvider();
             var service1 = container.GetService<IPropertyRetrieverService>();
             var service2 = container.GetService<IPropertyRetrieverService>();
