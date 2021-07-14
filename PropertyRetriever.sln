@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30204.135
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyRetriever", "src\PropertyRetriever\PropertyRetriever.csproj", "{22890C25-8FCA-43EC-9839-72CB04A2CF90}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PropertyRetriever.UnitTest", "test\PropertyRetriever.UnitTest\PropertyRetriever.UnitTest.csproj", "{D5510C09-57E6-4BD3-B334-160C20B4FA3F}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -17,10 +15,6 @@ Global
 		{22890C25-8FCA-43EC-9839-72CB04A2CF90}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22890C25-8FCA-43EC-9839-72CB04A2CF90}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22890C25-8FCA-43EC-9839-72CB04A2CF90}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D5510C09-57E6-4BD3-B334-160C20B4FA3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D5510C09-57E6-4BD3-B334-160C20B4FA3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D5510C09-57E6-4BD3-B334-160C20B4FA3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D5510C09-57E6-4BD3-B334-160C20B4FA3F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

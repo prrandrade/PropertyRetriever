@@ -1,10 +1,10 @@
 namespace PropertyRetriever.UnitTest
 {
-    using Interfaces;
     using Microsoft.Extensions.DependencyInjection;
     using Xunit;
+    using static PropertyRetriever;
 
-    public class PropertyRetrieverExtensionsTest
+    public class PropertyRetrieverTest
     {
         [Fact]
         public void AddLocalEnvironment()
@@ -13,6 +13,10 @@ namespace PropertyRetriever.UnitTest
             var services = new ServiceCollection();
 
             // act
+            var t = RetrieveProperty<string>("property", "-p", "--property")
+
+
+
             services.AddLocalEnvironment();
             var container = services.BuildServiceProvider();
             var service1 = container.GetService<ILocalEnvironment>();
