@@ -12,7 +12,7 @@
             var commandLine = Environment.GetCommandLineArgs();  
             var indexCommandLine = Array.FindIndex(commandLine, s => s == propertyName || otherNames != null && otherNames.Contains(s));
             if (indexCommandLine != -1 && indexCommandLine < commandLine.Length - 1)
-                return (T)Convert.ChangeType(commandLine[indexCommandLine], typeof(T), CultureInfo.InvariantCulture);
+                return (T)Convert.ChangeType(commandLine[indexCommandLine + 1], typeof(T), CultureInfo.InvariantCulture);
                     
             // environment
             if (!string.IsNullOrWhiteSpace(Environment.GetEnvironmentVariable(propertyName)))
