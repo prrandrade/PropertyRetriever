@@ -4,7 +4,7 @@
     using System.Globalization;
     using System.Linq;
 
-    public static class PropertyRetriever
+    public static class Properties
     {
         public static T RetrieveProperty<T>(string propertyName, params string[] otherNames)
         {
